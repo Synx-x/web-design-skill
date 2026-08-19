@@ -28,30 +28,34 @@ Any web design task: new page, component, or design system. Run this skill **bef
 
 Do not skip to implementation. This skill runs first, every time.
 
-## Required Sub-Skills
+## Required Sub-Skills (hard dependency, all of them)
 
-This skill orchestrates the following. Invoke each one when its trigger fires. Skipping a sub-skill without an explicit recorded N/A reason in the Pre-Build Manifest is a failure mode. "Not needed" alone is rejected. State the specific reason this task does not trigger that skill.
+This skill orchestrates the following. Every row is a hard dependency, installed by Method Step -1 before any other step runs. Invoke each one when its trigger fires. Skipping a sub-skill without an explicit recorded N/A reason in the Pre-Build Manifest is a failure mode. "Not needed" alone is rejected. State the specific reason this task does not trigger that skill.
 
-| Sub-skill | Trigger condition |
-|-----------|-------------------|
-| `huashu-design` (Advisor Mode), plus a taste library filesystem check alongside it | Always, for new page/full-site/full-aesthetic-direction tasks, no exceptions. For single-component or established-project tasks: ask the user in the Confidence Check batch rather than silently skipping. See `references/taste-library-and-variants.md` |
-| `huashu-design` (Brand Asset Protocol) | Specific company, product, or existing brand named |
-| `huashu-design` (design_canvas.jsx) | Comparison view for Step 3's variant set (structural wireframes or Wide-Net variants), any new full page or multi-region layout |
-| `huashu-design` (deck/animations/frames) | Presentation, pitch deck, motion export (MP4/GIF), device mockup |
-| `shadcn/ui` registry | Any UI component before hand-rolling |
-| `21st.dev` registry | UI component not covered by shadcn |
-| `ElevenLabs UI` registry | Voice/agent state-machine components |
-| `spline-3d-integration` | Hero section, product showcase, or any 3D scene |
-| `svg-animations` | Any animated SVG (path, stroke, morph) |
-| `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion or sequenced animation |
-| `frontend-design` | Aesthetic direction within token constraints |
-| `excalidraw-diagram-skill` | Visual wireframes |
-| A brainstorming/exploration skill (any general-purpose one your agent has) | Layout exploration, design tradeoffs |
+"Not installed" is never a valid N/A reason. Step -1 installs whatever is missing, which makes that reason impossible by construction. Every command in the Install column was verified working on 2026-08-19.
 
-Sub-skills above resolve by name through your own agent's skill discovery,
-whichever plugin/library provides them on your setup. Not all are
-guaranteed bundled with this skill. Unavailable ones get an N/A row on the
-manifest naming the reason ("not installed"), not silent omission.
+| Sub-skill | Trigger condition | Install |
+|-----------|-------------------|---------|
+| `huashu-design` (Advisor Mode), plus a taste library filesystem check alongside it | Always, for new page/full-site/full-aesthetic-direction tasks, no exceptions. For single-component or established-project tasks: ask the user in the Confidence Check batch rather than silently skipping. See `references/taste-library-and-variants.md` | `npx skills add alchaincyf/huashu-design -g -y` |
+| `huashu-design` (Brand Asset Protocol) | Specific company, product, or existing brand named | same package as above |
+| `huashu-design` (design_canvas.jsx) | Comparison view for Step 3's variant set (structural wireframes or Wide-Net variants), any new full page or multi-region layout | same package as above |
+| `huashu-design` (deck/animations/frames) | Presentation, pitch deck, motion export (MP4/GIF), device mockup | same package as above |
+| `shadcn/ui` registry | Any UI component before hand-rolling | CLI, no skill install. See `references/component-sources.md` |
+| `21st.dev` registry | UI component not covered by shadcn | CLI, no skill install |
+| `ElevenLabs UI` registry | Voice/agent state-machine components | CLI, no skill install |
+| `spline-3d-integration` | Hero section, product showcase, or any 3D scene | `npx skills add sickn33/agentic-awesome-skills -g -y -s spline-3d-integration` |
+| `svg-animations` | Any animated SVG (path, stroke, morph) | `npx skills add supermemoryai/skills -g -y -s svg-animations` |
+| `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion or sequenced animation | `npx skills add greensock/gsap-skills -g -y -s gsap-core -s gsap-timeline -s gsap-plugins -s gsap-react` |
+| `frontend-design` | Aesthetic direction within token constraints | `npx skills add anthropics/skills -g -y -s frontend-design` |
+| `excalidraw-diagram` | Visual wireframes | `npx skills add coleam00/excalidraw-diagram-skill -g -y` |
+| `brainstorming` | Layout exploration, design tradeoffs | `npx skills add obra/superpowers -g -y -s brainstorming` |
+| `higgsfield-generate`, or any image-generation tool you already have | Hero image on a full-aesthetic build (Method Step 6b) | `npx skills add higgsfield-ai/skills -g -y -s higgsfield-generate` |
+
+One exception to the install rule, and only one. `higgsfield-generate` drives a paid third-party service through its own `higgsfield` CLI. A working install still needs credentials this skill cannot provide. Substitute whatever image tool you already have and name it on the manifest. Every other row installs free and offline-clean, so no other row gets this latitude.
+
+Two syntax notes, both learned by testing the CLI rather than reading its help text. Repeated `-s` flags select multiple skills from one repo. A single comma-separated `-s` value fails with "No matching skills found". The `-g` flag installs to `~/.agents/skills/<name>` and links into each supported agent's own directory.
+
+Substituting an equivalent skill you already have is fine. Record the substitution on the manifest by name. An empty slot is not fine.
 
 ## External Design-Quality Tools (hard dependency)
 
@@ -78,7 +82,7 @@ Item numbers below are execution order, not Method step numbers. Each item names
 Method step it runs, in parens, so the two never drift out of sync.
 
 1. **Acknowledge skill loaded.** State: "running web-design skill against [task]". Name the build target candidate (Production UI, Static single-file demo, or Presentation/motion).
-2. **Run Method Step -1 (Tooling check, hard dependency).** Verify Impeccable and Taste Skill are installed. Install whichever is missing now, before any other step. No skip path.
+2. **Run Method Step -1 (Dependency check, hard dependency).** Two classes, both mandatory. Verify Impeccable and Taste Skill are installed. Then run Step -1's filesystem loop across every Required Sub-Skill name. Install everything missing in either class now, before any other step. No skip path, and no deferring an install until the build reaches the step that needs it.
 3. **Confidence check (mandatory).** Before locking direction, evaluate confidence on each of: `build target`, `brand identity`, `aesthetic direction`, `scope and sections`, `target audience`, `tech stack constraints`. Two conditions add an extra question here: the task is single-component, or it targets an established project (DESIGN.md + taste library already set). Both conditions also require that unconditional Advisor Mode does not already trigger (see next item). When both hold, add one more question to this same batch. Phrase it as: "Run a fresh Advisor Mode pass (3 new directions) for this task, or keep the existing brand direction"? If confidence on any item is below ~90%, batch all unknowns into a single `AskUserQuestion` call (1–4 questions max, multi-question form). Do this alongside the Advisor Mode question if it applies. Each question presents 2–4 concrete options with descriptions. Wait for answers before any further step. Do not ask questions sequentially when they can be batched. Do not proceed on assumed defaults.
 4. **Write the scope spec (mandatory, every task, no size exception).** Every branch resolved in item 3 above, plus every Required Sub-Skill's trigger decision, gets written to a spec file before Advisor Mode or Orient runs. See Method Step -0.25 below. This is what makes "shared understanding" a file on disk instead of something that only existed in the chat transcript.
 5. **Run Method Step 0 (Taste library check + Advisor Mode).** For new pages/full-site/full-aesthetic-direction tasks: run `huashu-design` Advisor Mode unconditionally, regardless of whether a taste library exists or the ask already sounds specific. Its 3 directions become extra candidates for Step 3's Wide-Net Variant Sequence, additive with any taste-library families found (not a replacement for them). For single-component/established-project tasks: honor whatever the user answered in item 3's Advisor Mode question.
@@ -107,14 +111,21 @@ per entry:
 - <id>: <VERDICT>. <what it produced, or why it does not apply>
 ```
 
-Verdicts are `INVOKED`, `CONSULTED`, `PENDING`, `N/A`, `NOT FOUND`. `N/A` is always
+Verdicts are `INVOKED`, `CONSULTED`, `PENDING`, `N/A`, `BLOCKED`. `N/A` is always
 acceptable and always needs a reason. "N/A, the app has no hero or marketing surface,
 its first screen is a task list" is a decision. An omitted line is not, and the two are
 indistinguishable in a transcript a week later.
 
-Report `NOT FOUND` rather than `N/A` when a tool is simply absent, and surface its
-install command to the user. A missing dependency is not the same as an excluded one,
-and collapsing the two hides a choice the user never got to make.
+There is no verdict for a dependency that is absent. Step -1 installs every one of them
+before this manifest exists, so "absent" is not a state the manifest can reach. If you
+find yourself wanting to write one, Step -1 did not complete. Go back and finish it.
+
+Use `BLOCKED` only when an install genuinely failed after a real attempt. Record the
+command you ran and the error it returned, then stop and report to the user. Never
+downgrade a failed install to `N/A` and continue building. This rule closes an observed
+hole: a live Codex run of this skill on 2026-08-19 wrote `frontend-design | NOT FOUND`
+into its own scope spec and kept building. See the source doc at
+https://github.com/Synx-x/web-design-skill for the current gate text.
 
 **Refusal contract:** If asked to write UI code without these outputs in sequence, refuse. Explain that the skill is active and the gates have not cleared. Restart from Step 1.
 
@@ -126,10 +137,9 @@ and collapsing the two hides a choice the user never got to make.
 
 ### -1. Tooling check (hard dependency, before everything else)
 
-Check for each tool's installed-state marker on disk. `npx impeccable detect` and other
-runtime commands work standalone via npx even without `install` ever having run, so a
-successful `detect` call is not evidence the skill is installed. Check the marker files
-instead:
+Two classes of dependency, one gate. Both classes are mandatory. Neither has a skip path.
+
+**Class 1, external npx tools.** Check for each tool's installed-state marker on disk. Runtime commands like `npx impeccable detect` work standalone via npx even without `install` ever having run. A successful `detect` call is therefore not evidence the skill is installed. Check the marker files instead:
 
 ```bash
 ls .impeccable/config.json .claude/skills/impeccable 2>/dev/null   # Impeccable installed if either exists
@@ -143,9 +153,26 @@ npx impeccable install                                            # Impeccable m
 npx skills add https://github.com/Leonxlnx/taste-skill -g -y      # Taste Skill markers absent. -g: global, not per-project
 ```
 
-No skip path. "Not installed" is not a valid Pre-Build Manifest reason for either tool,
-this step exists precisely to make that reason impossible. Full command reference in
-`references/design-quality-tools.md`.
+**Class 2, the Required Sub-Skills.** Resolve every name in the Required Sub-Skills table against disk. Run this check verbatim:
+
+```bash
+for s in huashu-design frontend-design excalidraw-diagram spline-3d-integration \
+         svg-animations gsap-core gsap-timeline gsap-plugins gsap-react brainstorming \
+         higgsfield-generate; do
+  found=""
+  for base in ./.claude/skills ./.cursor/skills ~/.claude/skills ~/.codex/skills ~/.agents/skills; do
+    [ -e "$base/$s" ] && found=1
+  done
+  [ -n "$found" ] && echo "OK      $s" || echo "MISSING $s"
+done
+```
+
+Install every name the loop printed as MISSING, using that row's command from the Required Sub-Skills table. Then rerun the loop. Proceed only when it prints zero MISSING lines.
+
+**No skip path, either class.** "Not installed" is not a valid Pre-Build Manifest reason for anything in either class. This step exists precisely to make that reason impossible. A `MISSING` line that survives into the manifest is a hard stop, not a recorded N/A. Full command reference in `references/design-quality-tools.md`.
+
+One caveat on agent linkage. The `npx skills add` output can name an agent directory it did not actually write. Trust the filesystem loop above over the installer's own summary. Verified against Codex on 2026-08-19: the installer printed "copy → Codex" while `~/.codex/skills/` stayed empty. A manual symlink from `~/.agents/skills/<name>` fixed it.
+
 
 ### -0.5. Confidence Check (mandatory, see Execution Contract item 3)
 
@@ -293,7 +320,7 @@ Use when building a full page or multi-region layout.
 
 **Full aesthetic build (default when the task is a new page's overall direction):** run the Wide-Net Variant Sequence in `references/taste-library-and-variants.md`. Build one full variant per direction sourced in Step 0. Use taste-library families plus Advisor Mode's picks together when a library exists, or Advisor Mode's picks alone when it doesn't. Typically 3-5 depending on how many directions Step 0 produced. Pick one, then 3 refinement iterations of it, then pick one final. This replaces plain structural wireframing for this case. It compares complete visual directions, not bare layout skeletons.
 
-**Structural wireframe (single components, or no aesthetic ambiguity):** default to **3 variations** before committing to one direction. Use a brainstorming/exploration skill to explore layout options. Reference `excalidraw-diagram-skill` for visual wireframes. Brand palette comes from DESIGN.md tokens. No free-form color choices.
+**Structural wireframe (single components, or no aesthetic ambiguity):** default to **3 variations** before committing to one direction. Use a brainstorming/exploration skill to explore layout options. Reference `excalidraw-diagram` for visual wireframes. Brand palette comes from DESIGN.md tokens. No free-form color choices.
 
 **Comparison layout, either branch:** use `huashu-design`'s `design_canvas.jsx` to show whichever set you're comparing side by side, the 3 structural wireframes or the Wide-Net Variant Sequence's variants. It's a side-by-side tool for both branches, not a branch of its own.
 
@@ -336,7 +363,7 @@ PRE-BUILD MANIFEST for: <task description>
 - spline-3d-integration: INVOKED <scene> | N/A <reason>
 - svg-animations + gsap-*: INVOKED <animations> | N/A <reason>
 - frontend-design: INVOKED <direction summary> | N/A <reason>
-- excalidraw-diagram-skill: INVOKED <wireframe> | N/A <reason>
+- excalidraw-diagram: INVOKED <wireframe> | N/A <reason>
 - Brainstorming/exploration pass: INVOKED <decisions> | N/A <reason>
 
 DESIGN.md: <path> (created/exists/updated)
@@ -507,7 +534,8 @@ dependency required to make the skill itself work correctly without one.
 | One-shot a full page/design direction without variants | Stop. Run the Wide-Net Variant Sequence (N -> 1 -> 3 -> 1) from `references/taste-library-and-variants.md`. One-shotting regresses to generic output. |
 | Taste library exists but wasn't checked | Stop. Step 0 runs before Step 1, every new page/full-site task. Source aesthetic families and references from it. |
 | Guardrails given as only "avoid AI slop" with no named patterns | Reject. Require concrete named bans (specific gradients, fonts, decorative patterns), per the 4-part prompt structure in `references/taste-library-and-variants.md`. |
-| Manifest marked Impeccable/Taste Skill N/A for "not installed" | Reject. Hard dependency since Step -1. Install now (`npx impeccable install`, `npx skills add .../taste-skill -g -y`), then continue. No N/A path exists for this reason. |
+| Manifest marked any dependency N/A or NOT FOUND for "not installed" | Reject. Every Required Sub-Skill and both external tools are hard dependencies since Step -1. Run that step's filesystem loop, install every MISSING name from its table row, then continue. No N/A path exists for this reason. |
+| Proceeded past Step -1 with a MISSING line unresolved | Stop. Return to Step -1. A dependency install is not optional work to be deferred until the build needs it. |
 | Impeccable/Taste Skill installed but never invoked | Run `impeccable detect` at Anti-slop and Validate gates at minimum. Reach for named commands (`bolder`, `overdrive`, etc.) for targeted fixes. |
 | Advisor Mode skipped for a full-page/full-aesthetic task because the ask "seemed specific enough" | Reject. Advisor Mode is unconditional for this task class since Step 0. Specificity is not a valid skip reason. |
 | Advisor Mode skipped for a full-page task because a taste library exists | Reject. Taste library and Advisor Mode are additive, not either/or. Run both, feed both into Step 3. |

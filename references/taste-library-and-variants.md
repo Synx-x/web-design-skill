@@ -90,8 +90,9 @@ Advisor Mode, or from explicit user-named styles (see Precedence above).
    named structural axis (e.g. body layout: vertical minimal vs. sidebar index vs.
    framed sections). Pick one.
 4. **Nail the hero image.** Generate 4 hero-image variants via the `higgsfield-generate`
-   skill (already installed on this system), sourced from the taste library's reference
-   images for that aesthetic family. Pick one, then generate color/mood variants of that
+   skill, or any image tool you already have, sourced from the taste library's reference
+   images for that aesthetic family. Install command and the credentials caveat are in
+   SKILL.md's Required Sub-Skills table. Pick one, then generate color/mood variants of that
    pick (the video's example: original, then color accent, golden hour, alpenglow,
    duotone) and pick a final.
 5. **Polish transitions and motion.** Hero-to-body transition should not be abrupt.

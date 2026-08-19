@@ -1,0 +1,4 @@
+# Agent working dirs and local test output
+.codex/
+.grok/
+codex-test-run/
