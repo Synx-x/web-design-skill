@@ -1,4 +1,5 @@
 # Agent working dirs and local test output
+.claude/
 .codex/
 .grok/
-codex-test-run/
+codex-test-*/
