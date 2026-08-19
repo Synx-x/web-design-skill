@@ -590,6 +590,15 @@ first. An omitted Tweaks Bar row is not a smaller failure than an omitted depend
 Both are the same failure: a mandatory step that ran silently, or did not run at all, and
 nothing forced it into view.
 
+**Writing this block into the ledger file is not the same as satisfying this gate.** A
+live Codex run appended the correct four-line structure to `docs/design/design-ledger.md`
+through a file edit, then closed with an unrelated prose summary in chat and never printed
+the block itself, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-27-11-01a01958-974d-7b11-b00d-2c3d7b9c6e04.jsonl`.
+The user reading chat saw none of it. Both copies are required: the persistent one in the
+ledger file, and this exact block as its own chat message, before the closing summary,
+not folded into or replaced by one.
+
 
 ## Optional: machine-level enforcement
 
@@ -621,6 +630,7 @@ dependency required to make the skill itself work correctly without one.
 | Advisor Mode skipped for a full-page task because a taste library exists | Reject. Taste library and Advisor Mode are additive, not either/or. Run both, feed both into Step 3. |
 | Single-component/established-project task silently skipped Advisor Mode with no question asked | Stop. The Confidence Check batch (Execution Contract item 3) must include the opt-in question before deciding either way. |
 | Declared the task done without printing the Step 8 Post-Build Confirmation | Failure. Print the fixed template first: Hero image, Tweaks Bar, Validate, ledger file. A closing summary sentence does not substitute for it. |
+| Wrote the Post-Build Confirmation into the ledger file but never printed it in chat | Failure. Both copies are required. Print the exact block in chat before the closing summary, in addition to the file write. |
 | Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it, then report it on Step 8. |
 | Manifest or Post-Build Confirmation given as a prose paragraph instead of the literal template | Reject. Neither gate is satisfied by a summary that reads as complete. Every listed line needs its own id and verdict. |
 | Tweaks Bar built but missing a control for a DESIGN.md token the build uses, a motion parameter, or a component state | Reject. Coverage means every one the build actually has, a partial panel is a failed one. |
