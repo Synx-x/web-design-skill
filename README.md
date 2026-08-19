@@ -44,6 +44,8 @@ installs and uses these automatically:
 | `excalidraw-diagram` | Quick visual sketches |
 | `brainstorming` | Working through layout ideas and tradeoffs |
 | `higgsfield-generate` | Generates a hero image for the page |
+| `redesign-existing-projects` | Scans and diagnoses an existing project's code for a review |
+| `avoid-ai-writing` | Checks any written text the agent produces for you (a critique, a plan, a summary) before showing it, and cleans it up if it reads stiff or robotic |
 
 Full details and install commands for each one are in `SKILL.md`.
 

@@ -57,6 +57,7 @@ This skill orchestrates the following. Every row is a hard dependency, installed
 | `brainstorming` | Layout exploration, design tradeoffs | `npx skills add obra/superpowers -g -y -s brainstorming` |
 | `higgsfield-generate`, or any image-generation tool you already have | Hero image on a full-aesthetic build (Method Step 6b) | `npx skills add higgsfield-ai/skills -g -y -s higgsfield-generate` |
 | `redesign-existing-projects` | A Review task with codebase access (Method Step -0.75), Scan and Diagnose steps | `npx skills add Leonxlnx/taste-skill -g -y -s redesign-existing-projects` |
+| `avoid-ai-writing` | Every free-text output this skill or a sub-skill produces (Method Step 7.5), always | `npx skills add conorbronsdon/avoid-ai-writing -g -y` |
 
 One exception to the install rule, and only one. `higgsfield-generate` drives a paid third-party service through its own `higgsfield` CLI. A working install still needs credentials this skill cannot provide. Substitute whatever image tool you already have and name it on the manifest. Every other row installs free and offline-clean, so no other row gets this latitude.
 
@@ -110,8 +111,9 @@ Method step it runs, in parens, so the two never drift out of sync.
 11. **Run Method Step 5 (Pre-Build Manifest).** Output the manifest, including the scope-spec row from item 5. **Stop.** Wait for explicit user sign-off in chat. Do not infer approval. Do not proceed on silence.
 12. **Only after sign-off:** Run Method Step 6 (Build), 6b (Hero image, full-aesthetic builds), and 6c (Tweaks Bar, mandatory for every build, no exceptions).
 13. **Run Method Step 7 (Validate)** before declaring complete, including `impeccable detect`.
-14. **Run Method Step 8 (Post-Build Confirmation, mandatory gate).** Print the fixed template for Hero image, Tweaks Bar, Validate, and the ledger file. Do this before any "done" or "here's your page" message, not instead of one.
-15. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
+14. **Run Method Step 7.5 (Writing Quality Check, mandatory).** Pass every free-text output through `avoid-ai-writing`'s detect-only mode before it reaches chat or a file: the scope spec, DESIGN.md's prose, any chat summary. Applies to sub-skill and subagent output too, no exceptions for nesting depth.
+15. **Run Method Step 8 (Post-Build Confirmation, mandatory gate).** Print the fixed template for Hero image, Tweaks Bar, Validate, and the ledger file. Do this before any "done" or "here's your page" message, not instead of one.
+16. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
 
 ### Design ledger
 
@@ -177,7 +179,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill -g -y      # Taste Skill 
 ```bash
 for s in huashu-design frontend-design excalidraw-diagram spline-3d-integration \
          svg-animations gsap-core gsap-timeline gsap-plugins gsap-react brainstorming \
-         higgsfield-generate redesign-existing-projects; do
+         higgsfield-generate redesign-existing-projects avoid-ai-writing; do
   found=""
   for base in ./.claude/skills ./.cursor/skills ~/.claude/skills ~/.codex/skills ~/.agents/skills; do
     [ -e "$base/$s" ] && found=1
@@ -285,6 +287,10 @@ deterministic findings if `impeccable detect` ran, the pattern checklist hits if
 `redesign-existing-projects` ran. `redesign-existing-projects`'s own text moves straight
 from Diagnose into Fix. That default is overridden here. Diagnose, then stop, unless the
 Review Confidence Check's third answer was "apply fixes now."
+
+Run the written critique through Method Step 7.5's Writing Quality Check before showing
+it. A critique is exactly the kind of free-text output that step covers, whether the rubric
+ran directly or huashu-design's own narration produced the wording.
 
 **Handing off to a build.** When the outcome requested is "diagnosis + fixes," the Fix
 list becomes the scope. Re-enter this skill's Method at Step 4 (Discover Components) or
@@ -688,6 +694,34 @@ Run `design.md diff` if tokens changed from a prior version.
 - Custom CSS lives in `@layer components` or `@layer utilities`, not unlayered globals
 - Light/dark switching driven by `.dark` class, not separate stylesheets
 
+### 7.5. Writing Quality Check (mandatory, every prose output)
+
+Every free-text section this skill produces for a human to read passes through
+`avoid-ai-writing`'s detect-only mode before it reaches chat or a file. This covers the
+scope spec's descriptions, DESIGN.md's prose, the Review branch's critique text, and any
+chat-facing summary. It does not cover fixed templates like the Pre-Build Manifest or
+Post-Build Confirmation, those already have their own literal-format requirement, and a
+line like `- Access: screenshot only` has no AI-writing pattern to catch.
+
+Run detect-only, read the findings, then fix them yourself before the text goes out.
+Reaching for `avoid-ai-writing`'s edit-in-place mode on a chat message you have not sent
+yet does the same job. Either way, the check happens before delivery, not as a retroactive
+cleanup once the user has already seen the flawed version.
+
+**Applies through any nesting, no exceptions.** If this skill's own text delegates a
+piece of writing to a sub-skill or a spawned subagent, huashu-design's Advisor Mode
+narration, `redesign-existing-projects`' diagnosis prose, a subagent asked to draft the
+scope spec, that output still passes through this check before you present it. Depth of
+delegation does not exempt a paragraph from the same standard. If you cannot run
+`avoid-ai-writing` directly against a subagent's raw output, apply its checklist by hand
+to what the subagent returned before forwarding it.
+
+**What it catches**, in short: em dash overuse (target zero, hard max one per 1,000
+words), hedge words (`perhaps`, `to be clear`), hollow intensifiers (`genuine`, `truly`),
+bullet lists used where prose reads better, and jargon introduced without a
+plain-language gloss on first use. Full checklist in the skill's own SKILL.md.
+
+
 ### 8. Post-Build Confirmation (mandatory gate, before declaring the task done)
 
 The Pre-Build Manifest catches a skipped dependency or a skipped pre-build decision. It
@@ -745,6 +779,8 @@ dependency required to make the skill itself work correctly without one.
 | A live-URL review opened the page with a general web-fetch tool and skipped `impeccable detect <url>` | Reject. The named tool covers exactly this case. Run it before substituting a manual read. |
 | Review Manifest never printed for a URL or codebase review, even though the resulting critique was thorough | Reject. Thorough prose does not satisfy this gate on any access type. Print the template. |
 | Impeccable invoked by calling a script path (e.g. `impeccable/scripts/detect.mjs`) instead of `npx impeccable <command>` | Reject. The script path skips dependency resolution, runs degraded, and returns an empty finding list. Use the CLI. |
+| Free-text output shown to the user without running Step 7.5's Writing Quality Check first | Reject. Run `avoid-ai-writing` detect-only, fix what it flags, then deliver. |
+| A subagent or sub-skill's prose (huashu-design narration, `redesign-existing-projects` diagnosis text) shipped as-is, on the reasoning that Step 7.5 only applies to text this skill wrote directly | Reject. Nesting depth does not exempt a paragraph. Apply the same check to delegated output before forwarding it. |
 | Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
 | `redesign-existing-projects` ran its Fix step on its own after Diagnose, with no separate approval | Reject. This skill overrides that default. Diagnose, then stop, unless the user asked for fixes. |
 | Review findings given as a prose paragraph instead of the Review Manifest template | Reject. Same discipline as the Pre-Build Manifest: print the fixed template. |
