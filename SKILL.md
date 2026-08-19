@@ -195,6 +195,17 @@ ask it separately, and don't skip asking it). Full mechanics live in the Executi
 Contract, this header exists only so Step -1 and Step 0 have something concrete to point
 to in sequence.
 
+**Named anti-pattern, banned outright.** Inventing a full direction yourself, then asking
+one closing question like "Does this direction look right?" or "Approve this direction and
+I'll build it" is not the Confidence Check. It looks similar, reads as thorough, and is not
+this gate. Two live Codex runs against this exact skill text produced this substitute
+instead of the real batch, on a vague single-sentence request that should have triggered
+every axis — logged at `/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T10-55-02-01a0193b-275f-7720-b491-d839a64edac6.jsonl`
+and `rollout-2026-08-19T11-02-07-01a01941-a296-7602-8714-4cb890015312.jsonl`. The Confidence
+Check has a fixed shape: several named axes, each with 2-4 concrete options, asked
+together, before you have picked a direction. A single invented direction plus one yes/no
+question is always wrong here, regardless of how detailed that direction reads.
+
 ### -0.25. Write the scope spec (mandatory, every task, see Execution Contract item 4)
 
 Immediately after the Confidence Check resolves every axis (by user answer or by
@@ -633,5 +644,6 @@ dependency required to make the skill itself work correctly without one.
 | Asked clarifying questions one at a time when they could be batched | Replace with a single `AskUserQuestion` call carrying all independent unknowns as separate questions. |
 | Assumed a default (e.g. picked a brand archetype, build target, or palette) without asking | Stop. Roll back the assumption. Add it to the batched question set. Let the user pick. |
 | Confidence check skipped because the request "felt clear" | Re-evaluate the six axes (build target, brand, aesthetic, scope, audience, tech stack). If any is below ~90%, the gate fires. |
+| Invented a full direction, then asked one closing question ("Does this look right?", "Approve this direction") instead of the batched multi-axis question | Reject. This is the named anti-pattern above. Discard the invented direction. Run the real Confidence Check: named axes, concrete options, asked together. |
 | Confidence Check resolved but no scope-spec file written | Reject. The spec file is mandatory for every task, not just vague/large ones. Write it before Step 0. |
 | Scope-spec written with an empty journey-matrix cell left blank | Reject. An empty cell means the interview didn't reach it. Fill it in or move it to Non-goals explicitly. |
