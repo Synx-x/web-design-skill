@@ -1,57 +1,84 @@
 # web-design
 
-Design method for AI coding agents. One skill, eleven required sub-skills,
-a mandatory pre-build manifest, and a post-build confirmation gate.
+A design process for AI coding agents (Claude Code, Codex, Cursor, and others).
+Instead of jumping straight to code, it makes the agent ask you the right
+questions first, show you a plan, and confirm what it actually built at the
+end.
 
 > Quick start: `npx skills add https://github.com/Synx-x/web-design-skill -g -y`,
-> then ask your agent to build a page or component. The skill triggers on
-> its own description, no explicit invocation needed.
+> then just ask your agent to build a page or component. You don't need to
+> name the skill or run a special command, it kicks in on its own.
 
 ## Why this skill
 
-Anthropic's `frontend-design` skill covers taste and direction. This skill
-is the method around it: the gate that runs before any UI code, not a
-style guide on its own. It enforces a written scope spec, a batched
-question set instead of guessed defaults, a signed-off pre-build manifest,
-and a post-build confirmation naming every dependency's outcome.
+Anthropic's `frontend-design` skill helps an agent pick a good look and feel.
+This skill is the process wrapped around that: the checklist an agent runs
+through before it writes any interface code, not another style guide. It
+makes the agent write down what it's about to build, ask you a short set of
+questions instead of guessing, show you a plan before touching any code, and
+tell you exactly what it did once the build is finished.
 
 ## What's included
 
 ### The skill: web-design
-Single entry point. Ask for any web design task and it runs before code:
-tooling check, confidence check, scope spec, taste/Advisor Mode direction,
-wireframe or variant sequence, component discovery, pre-build manifest,
-build, and a post-build confirmation.
+One thing to install. Ask for any web design task, and before writing code
+the agent will: check its tools are installed, ask you a short set of
+questions, write down the plan, pick a visual direction, sketch or compare
+layout options, check what's already built for this (so it isn't
+reinventing a button), show you the final plan for approval, build it, and
+report back on what it did.
 
-### Required sub-skills
+### Sub-skills it uses
 
-| Sub-skill | Purpose |
-|-----------|---------|
-| `huashu-design` | Advisor Mode, Brand Asset Protocol, variant comparisons, deck/motion output |
-| `frontend-design` | Aesthetic direction within token constraints |
-| `spline-3d-integration` | Embeds a pre-authored Spline scene |
-| `svg-animations` | Animated SVG: path, stroke, morph |
-| `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion and sequenced animation |
-| `excalidraw-diagram` | Visual wireframes |
-| `brainstorming` | Layout exploration, design tradeoffs |
-| `higgsfield-generate` | Hero image on a full-aesthetic build |
+A sub-skill is a smaller, focused skill this one calls in for a specific
+job, the way a general contractor calls in an electrician. This skill
+installs and uses these automatically:
 
-Full trigger conditions and install commands are in `SKILL.md`'s Required
-Sub-Skills table.
+| Sub-skill | What it's for |
+|-----------|----------------|
+| `huashu-design` | Picks a visual direction, checks brand assets, compares layout options |
+| `frontend-design` | General taste and visual direction |
+| `spline-3d-integration` | Adds an interactive 3D scene, if one already exists to embed |
+| `svg-animations` | Animated icons and illustrations |
+| `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion and animation |
+| `excalidraw-diagram` | Quick visual sketches |
+| `brainstorming` | Working through layout ideas and tradeoffs |
+| `higgsfield-generate` | Generates a hero image for the page |
 
-### Rules the skill enforces
+Full details and install commands for each one are in `SKILL.md`.
 
-- No dependency gets an N/A verdict for being absent. Install it instead.
-- A design direction never stands in for the batched question set the
-  user is meant to answer.
-- Picking a variant is not the same as signing off on the pre-build
-  manifest. Both need their own explicit approval.
-- The Tweaks Bar is mandatory on every build, static or single-file
-  included, and gets a named list of the controls it exposes, not `N/A`.
-- Every build ends with a printed confirmation naming the outcome of the
-  hero image, the Tweaks Bar, validation, and the design ledger.
-- A 3D task asks whether a Spline scene already exists to embed before
-  defaulting to a hand-rolled library.
+### What the skill guarantees
+
+- It never skips a missing tool. If something it needs isn't installed, it
+  installs it, it doesn't just shrug and move on.
+- It never invents an answer to a question you were supposed to answer. If
+  it's unsure what you want, it asks.
+- Choosing a design direction and approving the final build plan are two
+  separate steps. Picking a direction doesn't count as approving the plan.
+- Every build gets a small settings panel so you can tweak colors, spacing,
+  and other details live, in the browser, without asking the agent to redo
+  the work.
+- At the end of every build, the agent tells you exactly what it did and
+  didn't do, no vague "all done!" summaries.
+- If a task needs a 3D model, the agent checks whether you already have one
+  before building a custom one from scratch.
+
+## Reviewing existing work
+
+You don't have to be building something new. You can also ask it to
+critique or improve a design you already have:
+
+```
+Review my landing page and tell me what's wrong with it.
+Here's a screenshot of my app, what would you improve?
+Audit my site at mysite.com for accessibility issues.
+```
+
+Point it at a screenshot, a live website, or your project's code, and it
+will give you a written critique: what's working, what isn't, and how
+serious each issue is. It won't touch your code unless you ask it to fix
+something. If you do ask for a fix, it only changes what you asked for,
+it doesn't rebuild the whole page.
 
 ## Installation
 
@@ -61,7 +88,8 @@ Sub-Skills table.
 npx skills add https://github.com/Synx-x/web-design-skill -g -y
 ```
 
-Drop `-g` to install into the current project instead of globally.
+Drop `-g` to install it for just the current project instead of every
+project on your machine.
 
 ### Option 2: git clone into a project
 
@@ -69,43 +97,42 @@ Drop `-g` to install into the current project instead of globally.
 git clone https://github.com/Synx-x/web-design-skill .claude/skills/web-design
 ```
 
-Adjust the target path for your harness (`.codex/skills/`, `.cursor/skills/`,
-`~/.agents/skills/`, etc).
+Change the folder path to match your tool: `.codex/skills/`,
+`.cursor/skills/`, `~/.agents/skills/`, and so on.
 
 ## Usage
 
-No slash command. Ask for the task directly:
+There's no special command to type. Just describe the task:
 
 ```
 Design a landing page for a coffee subscription service.
 Add a pricing card component to my existing React app.
 ```
 
-The skill announces itself, runs its tooling gate, then stops and asks a
-batched question set before doing anything else.
+The agent will say it's using this skill, check its tools are ready, then
+stop and ask you a few questions before doing anything else.
 
 ## Requires
 
 - [Impeccable](https://github.com/pbakaus/impeccable) and the
-  [Taste Skill](https://github.com/Leonxlnx/taste-skill), both npx-installed.
-  The skill's own Step -1 installs whichever is missing. Neither has a
-  valid N/A path.
-- An agent/harness that supports the [skills CLI](https://skills.sh/)
-  convention.
+  [Taste Skill](https://github.com/Leonxlnx/taste-skill), two design-quality
+  tools this skill relies on. You don't need to install these yourself,
+  the skill installs whichever one is missing the first time it runs.
+- An AI coding tool that supports the [skills CLI](https://skills.sh/)
+  standard for installing skills.
 
 ## Supported tools
 
-Anything the [skills CLI](https://skills.sh/) targets: Claude Code, Codex
-CLI, Cursor, and the other agents it lists with `npx skills add -a '*'`.
+Anything the [skills CLI](https://skills.sh/) supports: Claude Code, Codex
+CLI, Cursor, and the other tools it lists.
 
 ## Contributing
 
-Open an issue or PR at
+Found a bug or have an idea? Open an issue or pull request at
 [github.com/Synx-x/web-design-skill](https://github.com/Synx-x/web-design-skill).
 
-## Repository layout
+## What's in this repository
 
-- `SKILL.md`: the full method
-- `references/`: taste-library and Wide-Net Variant Sequence detail, the
-  DESIGN.md schema, WCAG contrast checks, component-source registries, the
-  design-quality tooling command reference, and a micro-details checklist
+- `SKILL.md`: the full set of instructions the agent follows
+- `references/`: supporting detail, like color-contrast rules, where to
+  find reusable UI components, and a checklist for small polish details
