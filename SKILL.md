@@ -532,6 +532,16 @@ Run `impeccable live` too, as a supplement (it's a hard dependency, always avail
 Report this step's outcome in Step 8, not by inference from silence. Step 8 is where an
 omitted Tweaks Bar becomes visible instead of quietly passing as done.
 
+**Named anti-pattern, banned outright.** "N/A, this is a static/single-file/simple page
+with no separate tuning surface" is not a valid reason, no matter how reasonable it reads.
+A live Codex run wrote exactly that for a static single-file coffee landing page that had
+a subscription-plan selector, itself a token/state combination this gate exists to
+expose — logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-12-53-01a0194b-7ed2-7533-b1df-0285e0429074.jsonl`.
+"No N/A path" in the paragraph above means what it says: every build gets one, including
+static and single-file builds. If the build has zero tokens and zero states to expose,
+that would itself be a Step 6 violation, not a reason to skip this step.
+
 
 ### 7. Validate
 
