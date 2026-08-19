@@ -18,6 +18,15 @@ Method section, leaving only the frontmatter and table visible. That silently
 drops the tooling gate, the Confidence Check, and the scope spec. Read each
 skill's file with its own dedicated call.
 
+This file grows as it gets hardened. Check `wc -l SKILL.md` before deciding how much
+of it to read, then read to the real end, not to a round chunk size like 220 or 520
+lines. A live Codex run stopped its own manual `sed -n` read partway through, past the
+Pre-Build Manifest's start but before Step 8's Post-Build Confirmation and the whole
+Failure Modes table, and built a full page having never seen either, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T19-07-59-01a01afe-76fd-7a11-ac84-81198cf015ec.jsonl`.
+If your read stops before the closing `## Failure Modes` heading, you have not read
+this file.
+
 The scope-spec gate below is adapted from [mattpocock/skills](https://github.com/mattpocock/skills)'
 `skills/productivity/grilling/SKILL.md` and `skills/productivity/grill-me/SKILL.md`,
 by way of a `scope-grill` skill that wrapped that interview loop with a
@@ -779,6 +788,7 @@ dependency required to make the skill itself work correctly without one.
 | A live-URL review opened the page with a general web-fetch tool and skipped `impeccable detect <url>` | Reject. The named tool covers exactly this case. Run it before substituting a manual read. |
 | Review Manifest never printed for a URL or codebase review, even though the resulting critique was thorough | Reject. Thorough prose does not satisfy this gate on any access type. Print the template. |
 | Impeccable invoked by calling a script path (e.g. `impeccable/scripts/detect.mjs`) instead of `npx impeccable <command>` | Reject. The script path skips dependency resolution, runs degraded, and returns an empty finding list. Use the CLI. |
+| A manual chunked read of this file (`sed -n '1,220p'`, then `'221,520p'`) stopped short of the end, and every gate past that point ran unseen instead of skipped | Stop. Check `wc -l` first. Read to the closing `## Failure Modes` heading, not to a round chunk size. |
 | Free-text output shown to the user without running Step 7.5's Writing Quality Check first | Reject. Run `avoid-ai-writing` detect-only, fix what it flags, then deliver. |
 | A subagent or sub-skill's prose (huashu-design narration, `redesign-existing-projects` diagnosis text) shipped as-is, on the reasoning that Step 7.5 only applies to text this skill wrote directly | Reject. Nesting depth does not exempt a paragraph. Apply the same check to delegated output before forwarding it. |
 | Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
