@@ -669,14 +669,20 @@ selector, a draggable element with a hover/active state. Each is a token/state c
 this gate exists to expose, and naming the excuse in prose alone is not enough to stop it,
 which is why the check below is mechanical rather than a plain instruction.
 
-**Mechanical check, not just a prose rule.** Before writing this row's verdict, open the
-DESIGN.md this build produced and count its token declarations. `N/A` is only reachable if
-that count is zero. A build with a nonzero DESIGN.md token count writing `N/A` here is
-self-contradicting: Step 1 already established there are tokens to expose. `INVOKED` is
-the only honest verdict once DESIGN.md has content, and its text must name at least two
-of those specific tokens or states, not a category description. "N/A, static demo" without
-first checking DESIGN.md's token count is exactly the failure this paragraph exists to
-stop.
+**There is no N/A path, full stop.** Not "only reachable if DESIGN.md has zero tokens."
+That condition does not occur in practice: `references/design-md-schema.md` requires a
+baseline color, typography, and spacing set on every DESIGN.md, so a real build always has
+something to expose. Treat Tweaks Bar the same as Impeccable and Taste Skill in the
+Required Sub-Skills table above: zero N/A path, ever.
+
+**The verdict needs a number attached, not a claim.** Before writing this row, count
+DESIGN.md's token declarations yourself: `grep -c ":" DESIGN.md` or equivalent. Write the
+count into the verdict: `Tweaks Bar: INVOKED (N controls: token1, token2, state1, ...)`.
+A verdict with no number in it, in any wording, is not a valid line. "N/A, static demo,"
+"N/A, no external tweak tool," "N/A, no live tuning surface needed," and every future
+rewording of the same excuse all fail the same check: they name zero controls. If your
+verdict names zero controls, it is wrong, regardless of how the sentence around the zero
+is phrased.
 
 
 ### 7. Validate
@@ -752,7 +758,7 @@ template, printed in chat, before any "done", "built", or "here's your page" mes
 POST-BUILD CONFIRMATION for: <task description>
 
 - Hero image (Step 6b): INVOKED <variants generated, final pick> | N/A <reason, e.g. single component, no hero section>
-- Tweaks Bar (Step 6c, mandatory every build): INVOKED <controls exposed: which tokens, which motion parameters, which states>, no N/A path
+- Tweaks Bar (Step 6c, mandatory every build): INVOKED (N controls: <name each token/motion/state>), no N/A path, always name N
 - Validate (Step 7): PASSED <impeccable detect result, contrast/responsive/state checks> | FAILED <finding, fix applied>
 - Design ledger file: WRITTEN <path> | UPDATED <path>
 ```
@@ -768,8 +774,14 @@ nothing forced it into view.
 Appending the correct four-line structure to `docs/design/design-ledger.md` through a
 file edit, then closing with an unrelated prose summary in chat, leaves the user reading
 chat with none of it. Both copies are required: the persistent one in the ledger file, and
-this exact block as its own chat message, before the closing summary, not folded into or
-replaced by one.
+this exact block in chat.
+
+**This block is the closing message. There is no other one.** Not "print the block, then
+write a friendlier closing paragraph." The chat message containing this block is the last
+thing you send for this task. If your task-ending message does not start with the literal
+text `POST-BUILD CONFIRMATION for:`, you have not sent it yet, no matter how complete the
+message you did send reads. A message that starts with "Built and validated the..." and
+mentions the same facts in prose is not this gate, even when every fact in it is accurate.
 
 
 ## Optional: machine-level enforcement
@@ -815,8 +827,10 @@ dependency required to make the skill itself work correctly without one.
 | Advisor Mode skipped for a full-page task because a taste library exists | Reject. Taste library and Advisor Mode are additive, not either/or. Run both, feed both into Step 3. |
 | Single-component/established-project task silently skipped Advisor Mode with no question asked | Stop. The Confidence Check batch (Execution Contract item 4) must include the opt-in question before deciding either way. |
 | Declared the task done without printing the Step 8 Post-Build Confirmation | Failure. Print the fixed template first: Hero image, Tweaks Bar, Validate, ledger file. A closing summary sentence does not substitute for it. |
+| Closing chat message reads like "Built and validated the..." instead of starting with `POST-BUILD CONFIRMATION for:` | Failure, even if every fact stated is accurate. The literal string is the check. Rewrite the message so the block is the message. |
 | Wrote the Post-Build Confirmation into the ledger file but never printed it in chat | Failure. Both copies are required. Print the exact block in chat before the closing summary, in addition to the file write. |
 | Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it, then report it on Step 8. |
+| Tweaks Bar verdict named zero controls, in any wording ("no external tweak tool," "no live tuning surface," or a genuinely new excuse not listed here) | Reject. Zero controls named is the same failure regardless of phrasing. Count DESIGN.md's tokens, name that many. |
 | Manifest or Post-Build Confirmation given as a prose paragraph instead of the literal template | Reject. Neither gate is satisfied by a summary that reads as complete. Every listed line needs its own id and verdict. |
 | Tweaks Bar built but missing a control for a DESIGN.md token the build uses, a motion parameter, or a component state | Reject. Coverage means every one the build actually has, a partial panel is a failed one. |
 | Iterating by repeated vague re-prompts ("make it more premium") | Stop. Use the build's own Tweaks Bar (mandatory, Step 6c) or `impeccable live` for direct visual iteration instead of guessing through the terminal. |
