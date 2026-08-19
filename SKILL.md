@@ -12,6 +12,13 @@ If your harness supports PreToolUse-style hooks, you can additionally build
 a machine-level enforcement layer on top (see "Optional: machine-level
 enforcement" near the end), but nothing here depends on one existing.
 
+Read this file on its own, not batched into one call with other skills' SKILL.md
+files. A live Codex run on 2026-08-19 read this file together with two others in a
+single truncated exec call. The output cut off partway through this file's own
+Method section, and the run proceeded on the frontmatter and table alone, skipping
+the tooling gate, the Confidence Check, and the scope spec without anyone deciding
+to skip them. Read each skill's file with its own dedicated call.
+
 The scope-spec gate below is adapted from [mattpocock/skills](https://github.com/mattpocock/skills)'
 `skills/productivity/grilling/SKILL.md` and `skills/productivity/grill-me/SKILL.md`,
 by way of a `scope-grill` skill that wrapped that interview loop with a
