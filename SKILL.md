@@ -93,7 +93,8 @@ Method step it runs, in parens, so the two never drift out of sync.
 10. **Run Method Step 5 (Pre-Build Manifest).** Output the manifest, including the scope-spec row from item 4. **Stop.** Wait for explicit user sign-off in chat. Do not infer approval. Do not proceed on silence.
 11. **Only after sign-off:** Run Method Step 6 (Build), 6b (Hero image, full-aesthetic builds), and 6c (Tweaks Bar, mandatory for every build, no exceptions).
 12. **Run Method Step 7 (Validate)** before declaring complete, including `impeccable detect`.
-13. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
+13. **Run Method Step 8 (Post-Build Confirmation, mandatory gate).** Print the fixed template for Hero image, Tweaks Bar, Validate, and the ledger file. Do this before any "done" or "here's your page" message, not instead of one.
+14. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
 
 ### Design ledger
 
@@ -104,7 +105,9 @@ in chat and the user has explicitly signed off on it.
 
 Also write the manifest's content to a persistent file so it survives the
 chat: `docs/design/design-ledger.md` (or `DESIGN.md`, or
-`.claude/design-ledger.md`, whichever your project already uses). One line
+`.claude/design-ledger.md`, whichever your project already uses). Append
+Step 8's Post-Build Confirmation to that same file once the build finishes.
+The ledger is not done at sign-off. It closes when Step 8 does. One line
 per entry:
 
 ```
@@ -343,6 +346,17 @@ Full registry details in `references/component-sources.md`.
 
 Before writing any UI code, output the following manifest. Each row is INVOKED with a one-line summary of what was used, or N/A with a specific reason. "Not needed" alone is rejected.
 
+A prose paragraph summarizing your decisions does not satisfy this gate, no matter how
+complete it reads. Every line below must appear verbatim, with its id and a verdict. A
+live Codex run of this skill on 2026-08-19 printed a casual bullet summary instead of
+this template, and skipped two rows in the process without anyone noticing until the
+transcript was read back. See https://github.com/Synx-x/web-design-skill for the run.
+
+Two rows below only cover work this skill can do before the build exists. Hero image and
+Tweaks Bar happen after Step 6, so they cannot get a truthful verdict here. Step 8 covers
+them. Do not write a verdict for either row in this manifest. Do not skip Step 8 because
+this manifest felt complete without it.
+
 ```
 PRE-BUILD MANIFEST for: <task description>
 
@@ -352,8 +366,6 @@ PRE-BUILD MANIFEST for: <task description>
 - huashu-design (Advisor Mode): INVOKED <3 directions, additive with taste library above>, unconditional for full-aesthetic-direction tasks, no N/A path | For single-component/established tasks: ASKED in Confidence Check, user said <run it | keep existing direction>
 - Wide-Net Variant Sequence (N -> 1 -> 3 -> 1): INVOKED <N, source of directions, chosen direction + iteration> | N/A <reason, e.g. single component>
 - Structural wireframe (3 variations, Step 3 single-component branch): INVOKED <3 options, chosen> | N/A <reason, e.g. full-page task used Wide-Net instead>
-- Hero image (Step 6b, higgsfield-generate or your image tool): INVOKED <variants generated, final pick> | N/A <reason, e.g. single component, no hero section>
-- Tweaks Bar (Step 6c, mandatory every build): INVOKED <controls exposed: tokens/motion/states covered>, no N/A path
 - huashu-design (Brand Asset Protocol): INVOKED <assets found> | N/A <reason>
 - huashu-design (design_canvas.jsx): INVOKED <variant/wireframe set shown> | N/A <reason>
 - huashu-design (deck/animations/frames): INVOKED <components> | N/A <reason>
@@ -365,6 +377,7 @@ PRE-BUILD MANIFEST for: <task description>
 - frontend-design: INVOKED <direction summary> | N/A <reason>
 - excalidraw-diagram: INVOKED <wireframe> | N/A <reason>
 - Brainstorming/exploration pass: INVOKED <decisions> | N/A <reason>
+- Hero image and Tweaks Bar: see Step 8, printed after the build, no verdict here
 
 DESIGN.md: <path> (created/exists/updated)
 Token location: <path>/styles/globals.css (:root + .dark + @theme inline)
@@ -375,6 +388,7 @@ Anti-slop check: PASSED (no purple gradient, emoji icons, left-border cards, SVG
 **Hard stop.** Output the manifest to chat. Do not write UI code. Do not generate filenames. Do not draft markup. Wait for explicit user sign-off (e.g. "go", "approved", "proceed"). Silence is not approval. A vague "sounds good" is not approval. Reject N/A rows that lack a specific reason and require the user to elaborate before continuing.
 
 If you find yourself writing UI code and have not produced this manifest, stop immediately. Discard the in-progress code. Restart from Step 1.
+
 
 ### 6. Build: Token-First, State-First
 
@@ -487,6 +501,10 @@ Build a thorough live tweaks panel for every build, full page or single componen
 
 Run `impeccable live` too, as a supplement (it's a hard dependency, always available), but it does not replace this. Coverage: every DESIGN.md token this build actually uses, every named motion parameter, every defined component state, all live-toggleable. For full-aesthetic builds, also cover hero-level decisions once 6b's pick is locked.
 
+Report this step's outcome in Step 8, not by inference from silence. Step 8 is where an
+omitted Tweaks Bar becomes visible instead of quietly passing as done.
+
+
 ### 7. Validate
 
 Before shipping any UI:
@@ -510,6 +528,30 @@ Run `design.md diff` if tokens changed from a prior version.
 - `cn()` used for conditional classes, no string concatenation
 - Custom CSS lives in `@layer components` or `@layer utilities`, not unlayered globals
 - Light/dark switching driven by `.dark` class, not separate stylesheets
+
+### 8. Post-Build Confirmation (mandatory gate, before declaring the task done)
+
+The Pre-Build Manifest catches a skipped dependency or a skipped pre-build decision. It
+cannot catch a skipped post-build step, since Hero image, Tweaks Bar, and Validate all
+run after that manifest is signed off. This gate closes that hole the same way: a fixed
+template, printed in chat, before any "done", "built", or "here's your page" message.
+
+```
+POST-BUILD CONFIRMATION for: <task description>
+
+- Hero image (Step 6b): INVOKED <variants generated, final pick> | N/A <reason, e.g. single component, no hero section>
+- Tweaks Bar (Step 6c, mandatory every build): INVOKED <controls exposed: which tokens, which motion parameters, which states>, no N/A path
+- Validate (Step 7): PASSED <impeccable detect result, contrast/responsive/state checks> | FAILED <finding, fix applied>
+- Design ledger file: WRITTEN <path> | UPDATED <path>
+```
+
+A summary sentence like "built the page, ran the quality check, done" does not satisfy
+this gate. Each of the four lines above needs its own verdict. If you catch yourself
+about to declare the task finished without having printed this block, stop and print it
+first. An omitted Tweaks Bar row is not a smaller failure than an omitted dependency row.
+Both are the same failure: a mandatory step that ran silently, or did not run at all, and
+nothing forced it into view.
+
 
 ## Optional: machine-level enforcement
 
@@ -540,8 +582,9 @@ dependency required to make the skill itself work correctly without one.
 | Advisor Mode skipped for a full-page/full-aesthetic task because the ask "seemed specific enough" | Reject. Advisor Mode is unconditional for this task class since Step 0. Specificity is not a valid skip reason. |
 | Advisor Mode skipped for a full-page task because a taste library exists | Reject. Taste library and Advisor Mode are additive, not either/or. Run both, feed both into Step 3. |
 | Single-component/established-project task silently skipped Advisor Mode with no question asked | Stop. The Confidence Check batch (Execution Contract item 3) must include the opt-in question before deciding either way. |
-| Manifest shows no row for Step 6b (hero image) on a task with a hero section | Failure. The manifest has an explicit row for this now, INVOKED or N/A with a stated reason, not silent omission. |
-| Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it. |
+| Declared the task done without printing the Step 8 Post-Build Confirmation | Failure. Print the fixed template first: Hero image, Tweaks Bar, Validate, ledger file. A closing summary sentence does not substitute for it. |
+| Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it, then report it on Step 8. |
+| Manifest or Post-Build Confirmation given as a prose paragraph instead of the literal template | Reject. Neither gate is satisfied by a summary that reads as complete. Every listed line needs its own id and verdict. |
 | Tweaks Bar built but missing a control for a DESIGN.md token the build uses, a motion parameter, or a component state | Reject. Coverage means every one the build actually has, a partial panel is a failed one. |
 | Iterating by repeated vague re-prompts ("make it more premium") | Stop. Use the build's own Tweaks Bar (mandatory, Step 6c) or `impeccable live` for direct visual iteration instead of guessing through the terminal. |
 | Skipped DESIGN.md, hardcoded hex in CSS | Stop. Extract to CSS vars. Update DESIGN.md tokens. |
