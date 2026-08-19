@@ -56,6 +56,7 @@ This skill orchestrates the following. Every row is a hard dependency, installed
 | `excalidraw-diagram` | Visual wireframes | `npx skills add coleam00/excalidraw-diagram-skill -g -y` |
 | `brainstorming` | Layout exploration, design tradeoffs | `npx skills add obra/superpowers -g -y -s brainstorming` |
 | `higgsfield-generate`, or any image-generation tool you already have | Hero image on a full-aesthetic build (Method Step 6b) | `npx skills add higgsfield-ai/skills -g -y -s higgsfield-generate` |
+| `redesign-existing-projects` | A Review task with codebase access (Method Step -0.75), Scan and Diagnose steps | `npx skills add Leonxlnx/taste-skill -g -y -s redesign-existing-projects` |
 
 One exception to the install rule, and only one. `higgsfield-generate` drives a paid third-party service through its own `higgsfield` CLI. A working install still needs credentials this skill cannot provide. Substitute whatever image tool you already have and name it on the manifest. Every other row installs free and offline-clean, so no other row gets this latitude.
 
@@ -89,18 +90,19 @@ Method step it runs, in parens, so the two never drift out of sync.
 
 1. **Acknowledge skill loaded.** State: "running web-design skill against [task]". Name the build target candidate (Production UI, Static single-file demo, or Presentation/motion).
 2. **Run Method Step -1 (Dependency check, hard dependency).** Two classes, both mandatory. Verify Impeccable and Taste Skill are installed. Then run Step -1's filesystem loop across every Required Sub-Skill name. Install everything missing in either class now, before any other step. No skip path, and no deferring an install until the build reaches the step that needs it.
-3. **Confidence check (mandatory).** Before locking direction, evaluate confidence on each of: `build target`, `brand identity`, `aesthetic direction`, `scope and sections`, `target audience`, `tech stack constraints`. Two conditions add an extra question here: the task is single-component, or it targets an established project (DESIGN.md + taste library already set). Both conditions also require that unconditional Advisor Mode does not already trigger (see next item). When both hold, add one more question to this same batch. Phrase it as: "Run a fresh Advisor Mode pass (3 new directions) for this task, or keep the existing brand direction"? If confidence on any item is below ~90%, batch all unknowns into a single `AskUserQuestion` call (1–4 questions max, multi-question form). Do this alongside the Advisor Mode question if it applies. Each question presents 2–4 concrete options with descriptions. Wait for answers before any further step. Do not ask questions sequentially when they can be batched. Do not proceed on assumed defaults.
-4. **Write the scope spec (mandatory, every task, no size exception).** Every branch resolved in item 3 above, plus every Required Sub-Skill's trigger decision, gets written to a spec file before Advisor Mode or Orient runs. See Method Step -0.25 below. This is what makes "shared understanding" a file on disk instead of something that only existed in the chat transcript.
-5. **Run Method Step 0 (Taste library check + Advisor Mode).** For new pages/full-site/full-aesthetic-direction tasks: run `huashu-design` Advisor Mode unconditionally, regardless of whether a taste library exists or the ask already sounds specific. Its 3 directions become extra candidates for Step 3's Wide-Net Variant Sequence, additive with any taste-library families found (not a replacement for them). For single-component/established-project tasks: honor whatever the user answered in item 3's Advisor Mode question.
-6. **Run Method Step 1 (Orient).** Produce DESIGN.md (or confirm existing). Compile tokens.
-7. **Run Method Step 2 (Anti-slop).** Produce explicit pass/fail with named patterns checked, plus `impeccable detect` output (Impeccable is a hard dependency as of item 2, always installed by this point).
-8. **Run Method Step 3 (Wireframe/Variants).** For new full pages or multi-region layouts: run the Wide-Net Variant Sequence. Build one full variant per direction sourced in Step 0 (taste-library families plus Advisor Mode's picks, or user-named directions when no library exists). Narrow to 3 refinement iterations of the chosen one, then 1. Not a single structural wireframe. Skip only for single components, where a plain 3-variation structural wireframe still applies.
-9. **Run Method Step 4 (Discover Components).** Produce registry findings (shadcn/21st.dev/ElevenLabs/Spline) per component need.
-10. **Run Method Step 5 (Pre-Build Manifest).** Output the manifest, including the scope-spec row from item 4. **Stop.** Wait for explicit user sign-off in chat. Do not infer approval. Do not proceed on silence.
-11. **Only after sign-off:** Run Method Step 6 (Build), 6b (Hero image, full-aesthetic builds), and 6c (Tweaks Bar, mandatory for every build, no exceptions).
-12. **Run Method Step 7 (Validate)** before declaring complete, including `impeccable detect`.
-13. **Run Method Step 8 (Post-Build Confirmation, mandatory gate).** Print the fixed template for Hero image, Tweaks Bar, Validate, and the ledger file. Do this before any "done" or "here's your page" message, not instead of one.
-14. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
+3. **Run Method Step -0.75 (Task classification).** Classify as Build or Review before anything else. If Review: run the Review Confidence Check, not the build one. Print the Review Manifest and produce the diagnosis. Stop there unless the user asked for fixes. If Build: continue to item 4 below.
+4. **Confidence check (mandatory).** Before locking direction, evaluate confidence on each of: `build target`, `brand identity`, `aesthetic direction`, `scope and sections`, `target audience`, `tech stack constraints`. Two conditions add an extra question here: the task is single-component, or it targets an established project (DESIGN.md + taste library already set). Both conditions also require that unconditional Advisor Mode does not already trigger (see next item). When both hold, add one more question to this same batch. Phrase it as: "Run a fresh Advisor Mode pass (3 new directions) for this task, or keep the existing brand direction"? If confidence on any item is below ~90%, batch all unknowns into a single `AskUserQuestion` call (1–4 questions max, multi-question form). Do this alongside the Advisor Mode question if it applies. Each question presents 2–4 concrete options with descriptions. Wait for answers before any further step. Do not ask questions sequentially when they can be batched. Do not proceed on assumed defaults.
+5. **Write the scope spec (mandatory, every task, no size exception).** Every branch resolved in item 4 above, plus every Required Sub-Skill's trigger decision, gets written to a spec file before Advisor Mode or Orient runs. See Method Step -0.25 below. This is what makes "shared understanding" a file on disk instead of something that only existed in the chat transcript.
+6. **Run Method Step 0 (Taste library check + Advisor Mode).** For new pages/full-site/full-aesthetic-direction tasks: run `huashu-design` Advisor Mode unconditionally, regardless of whether a taste library exists or the ask already sounds specific. Its 3 directions become extra candidates for Step 3's Wide-Net Variant Sequence, additive with any taste-library families found (not a replacement for them). For single-component/established-project tasks: honor whatever the user answered in item 4's Advisor Mode question.
+7. **Run Method Step 1 (Orient).** Produce DESIGN.md (or confirm existing). Compile tokens.
+8. **Run Method Step 2 (Anti-slop).** Produce explicit pass/fail with named patterns checked, plus `impeccable detect` output (Impeccable is a hard dependency as of item 2, always installed by this point).
+9. **Run Method Step 3 (Wireframe/Variants).** For new full pages or multi-region layouts: run the Wide-Net Variant Sequence. Build one full variant per direction sourced in Step 0 (taste-library families plus Advisor Mode's picks, or user-named directions when no library exists). Narrow to 3 refinement iterations of the chosen one, then 1. Not a single structural wireframe. Skip only for single components, where a plain 3-variation structural wireframe still applies.
+10. **Run Method Step 4 (Discover Components).** Produce registry findings (shadcn/21st.dev/ElevenLabs/Spline) per component need.
+11. **Run Method Step 5 (Pre-Build Manifest).** Output the manifest, including the scope-spec row from item 5. **Stop.** Wait for explicit user sign-off in chat. Do not infer approval. Do not proceed on silence.
+12. **Only after sign-off:** Run Method Step 6 (Build), 6b (Hero image, full-aesthetic builds), and 6c (Tweaks Bar, mandatory for every build, no exceptions).
+13. **Run Method Step 7 (Validate)** before declaring complete, including `impeccable detect`.
+14. **Run Method Step 8 (Post-Build Confirmation, mandatory gate).** Print the fixed template for Hero image, Tweaks Bar, Validate, and the ledger file. Do this before any "done" or "here's your page" message, not instead of one.
+15. **Confirm the ledger (mandatory, gated).** Every roster entry from the Pre-Build Manifest gets one line with an explicit verdict, unchanged since sign-off. See "Design ledger" below.
 
 ### Design ledger
 
@@ -166,7 +168,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill -g -y      # Taste Skill 
 ```bash
 for s in huashu-design frontend-design excalidraw-diagram spline-3d-integration \
          svg-animations gsap-core gsap-timeline gsap-plugins gsap-react brainstorming \
-         higgsfield-generate; do
+         higgsfield-generate redesign-existing-projects; do
   found=""
   for base in ./.claude/skills ./.cursor/skills ~/.claude/skills ~/.codex/skills ~/.agents/skills; do
     [ -e "$base/$s" ] && found=1
@@ -182,9 +184,75 @@ Install every name the loop printed as MISSING, using that row's command from th
 One caveat on agent linkage. The `npx skills add` output can name an agent directory it did not actually write, printing "copy → Codex" while `~/.codex/skills/` stays empty. Trust the filesystem loop above over the installer's own summary. A manual symlink from `~/.agents/skills/<name>` to the missing target fixes it.
 
 
-### -0.5. Confidence Check (mandatory, see Execution Contract item 3)
+### -0.75. Task classification: Build or Review
 
-Runs between Step -1 and Step -0.25, always. Evaluate confidence on `build target`, `brand
+Runs after Step -1, before the Confidence Check. Every task in this skill is either a
+build (produce new UI) or a review (assess UI that already exists). The two need
+different questions, different tools, and different endings, and forcing a review
+through the build Confidence Check produces questions the user cannot answer (a build
+target, a brand identity, a tech stack, for a page that already has all three).
+
+**Trigger.** Classify as Review when the task names an existing artifact and asks for an
+assessment of it: "review", "critique", "audit", "what's wrong with", "how can I improve",
+"rate this", "score this", "feedback on", or a URL/screenshot/repo path offered alongside
+one of those words. Classify as Build otherwise, including "make this look better" with no
+existing artifact named. When ambiguous, ask in the Review Confidence Check below rather
+than guessing.
+
+**Review Confidence Check (replaces the build Confidence Check for this task class).**
+Three axes, batched, same rules as the build version: concrete options, asked together,
+wait for the answer.
+
+1. **What can you access?** A screenshot or description only. A live URL you can render.
+   A local codebase you can read.
+2. **What kind of read do you want?** A UX/design critique (hierarchy, craft, concept).
+   A technical audit (accessibility, performance, generic-AI-pattern detection). Both.
+3. **What should happen with the findings?** Diagnosis only, nothing gets touched.
+   Diagnosis plus a prioritized punch list for the user to act on later. Diagnosis, then
+   apply the agreed fixes now.
+
+**Routing, by what's accessible:**
+
+| Access | Tool |
+|--------|------|
+| Screenshot/description only | `huashu-design`'s expert-review checkpoint (`references/critique-guide.md`'s rubric: Concept, Philosophy Alignment, Visual Hierarchy, Craft, Functionality, Innovation, each 0-10) |
+| Live URL | `impeccable detect <url>`, plus the same rubric against a render of the page |
+| Local codebase | `redesign-existing-projects`'s Scan and Diagnose steps, plus `impeccable detect .` |
+
+A UX/design read routes to the rubric. A technical audit routes to `impeccable detect`
+and `redesign-existing-projects`'s pattern checklist. "Both" runs all applicable rows.
+
+**Review Manifest (mandatory, printed before any findings).** Same discipline as the
+Pre-Build Manifest: a fixed template, not a prose summary.
+
+```
+REVIEW MANIFEST for: <task description>
+
+- Access: <screenshot | URL | codebase>
+- Read requested: <UX critique | technical audit | both>
+- Outcome requested: <diagnosis only | diagnosis + punch list | diagnosis + fixes>
+- Tools invoked: <rubric | impeccable detect | redesign-existing-projects, or a combination>
+```
+
+**Diagnosis-only is a hard stop on code.** If the outcome requested is "diagnosis only" or
+"diagnosis + punch list," do not edit, generate, or scaffold anything. The deliverable is
+the written critique: rubric scores plus Keep/Fix/Quick-Wins if the rubric ran, the
+deterministic findings if `impeccable detect` ran, the pattern checklist hits if
+`redesign-existing-projects` ran. `redesign-existing-projects`'s own text moves straight
+from Diagnose into Fix. That default is overridden here. Diagnose, then stop, unless the
+Review Confidence Check's third answer was "apply fixes now."
+
+**Handing off to a build.** When the outcome requested is "diagnosis + fixes," the Fix
+list becomes the scope. Re-enter this skill's Method at Step 4 (Discover Components) or
+Step 5 (Pre-Build Manifest), scoped to the specific fixes agreed on. Do not restart from
+Step -0.5's build Confidence Check or run a fresh Advisor Mode pass for a punch-list item.
+A 3-line CSS fix does not need three new design directions.
+
+
+### -0.5. Confidence Check (mandatory, see Execution Contract item 4)
+
+Runs after Step -0.75 has classified this as a Build task, then before Step -0.25, always.
+Evaluate confidence on `build target`, `brand
 identity`, `aesthetic direction`, `scope and sections`, `target audience`, `tech stack
 constraints`. Below ~90% on any axis triggers a batched `AskUserQuestion`. For
 single-component/established-project tasks that wouldn't otherwise trigger Step 0's
@@ -201,7 +269,7 @@ Confidence Check has a fixed shape: several named axes, each with 2-4 concrete o
 asked together, before you have picked a direction. A single invented direction plus one yes/no
 question is always wrong here, regardless of how detailed that direction reads.
 
-### -0.25. Write the scope spec (mandatory, every task, see Execution Contract item 4)
+### -0.25. Write the scope spec (mandatory, every task, see Execution Contract item 5)
 
 Immediately after the Confidence Check resolves every axis (by user answer or by
 looked-up fact), write a spec file before Advisor Mode or Orient runs. Path:
@@ -271,7 +339,7 @@ suggest starting a taste library for future tasks, don't block on building one n
 
 For single-component or established-project tasks (not this task class): whether Advisor
 Mode runs was already settled by the Confidence Check's opt-in question (Execution
-Contract item 3). Honor that answer here rather than deciding again.
+Contract item 4). Honor that answer here rather than deciding again.
 
 ### 1. Orient: DESIGN.md (mandatory)
 
@@ -627,6 +695,10 @@ dependency required to make the skill itself work correctly without one.
 
 | Symptom | Fix |
 |---------|-----|
+| A review/critique task ran through the build Confidence Check (asked about brand identity, tech stack) instead of the Review Confidence Check | Stop. Step -0.75 classifies the task before either Confidence Check runs. Restart classification. |
+| Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
+| `redesign-existing-projects` ran its Fix step on its own after Diagnose, with no separate approval | Reject. This skill overrides that default. Diagnose, then stop, unless the user asked for fixes. |
+| Review findings given as a prose paragraph instead of the Review Manifest template | Reject. Same discipline as the Pre-Build Manifest: print the fixed template. |
 | One-shot a full page/design direction without variants | Stop. Run the Wide-Net Variant Sequence (N -> 1 -> 3 -> 1) from `references/taste-library-and-variants.md`. One-shotting regresses to generic output. |
 | Taste library exists but wasn't checked | Stop. Step 0 runs before Step 1, every new page/full-site task. Source aesthetic families and references from it. |
 | Guardrails given as only "avoid AI slop" with no named patterns | Reject. Require concrete named bans (specific gradients, fonts, decorative patterns), per the 4-part prompt structure in `references/taste-library-and-variants.md`. |
@@ -635,7 +707,7 @@ dependency required to make the skill itself work correctly without one.
 | Impeccable/Taste Skill installed but never invoked | Run `impeccable detect` at Anti-slop and Validate gates at minimum. Reach for named commands (`bolder`, `overdrive`, etc.) for targeted fixes. |
 | Advisor Mode skipped for a full-page/full-aesthetic task because the ask "seemed specific enough" | Reject. Advisor Mode is unconditional for this task class since Step 0. Specificity is not a valid skip reason. |
 | Advisor Mode skipped for a full-page task because a taste library exists | Reject. Taste library and Advisor Mode are additive, not either/or. Run both, feed both into Step 3. |
-| Single-component/established-project task silently skipped Advisor Mode with no question asked | Stop. The Confidence Check batch (Execution Contract item 3) must include the opt-in question before deciding either way. |
+| Single-component/established-project task silently skipped Advisor Mode with no question asked | Stop. The Confidence Check batch (Execution Contract item 4) must include the opt-in question before deciding either way. |
 | Declared the task done without printing the Step 8 Post-Build Confirmation | Failure. Print the fixed template first: Hero image, Tweaks Bar, Validate, ledger file. A closing summary sentence does not substitute for it. |
 | Wrote the Post-Build Confirmation into the ledger file but never printed it in chat | Failure. Both copies are required. Print the exact block in chat before the closing summary, in addition to the file write. |
 | Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it, then report it on Step 8. |
