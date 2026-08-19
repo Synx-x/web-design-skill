@@ -405,6 +405,16 @@ Anti-slop check: PASSED (no purple gradient, emoji icons, left-border cards, SVG
 
 **Hard stop.** Output the manifest to chat. Do not write UI code. Do not generate filenames. Do not draft markup. Wait for explicit user sign-off (e.g. "go", "approved", "proceed"). Silence is not approval. A vague "sounds good" is not approval. Reject N/A rows that lack a specific reason and require the user to elaborate before continuing.
 
+**Named anti-pattern, banned outright.** Picking a letter from a Step 0/3 variant set ("A",
+"B", "the second one") answers which direction to build, not whether to build. A live
+Codex run against this skill treated the user's variant pick as manifest sign-off and
+wrote "Direction A is approved. I'm moving into the build pass now" without ever printing
+the manifest template above — logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-12-53-01a0194b-7ed2-7533-b1df-0285e0429074.jsonl`,
+line 113. A direction pick and a manifest sign-off are two different user answers to two
+different questions asked at two different times. Print the manifest and get its own
+explicit approval even when the direction was already chosen.
+
 If you find yourself writing UI code and have not produced this manifest, stop immediately. Discard the in-progress code. Restart from Step 1.
 
 
@@ -627,6 +637,7 @@ dependency required to make the skill itself work correctly without one.
 | String concatenation for conditional classes | Use `cn()` helper from `lib/utils.ts`. |
 | className toggling for state | Use `data-state` attributes. Style via `data-[state=loading]:*` Tailwind variants. |
 | Skipped Pre-Build Manifest, jumped to code | Stop. Produce manifest. Get sign-off before any UI code. |
+| Treated a Step 0/3 variant pick ("A", "the second one") as manifest sign-off and started building | Reject. This is the named anti-pattern above. A direction pick answers a different question than a manifest approval. Print the manifest, get its own explicit sign-off. |
 | Manifest used "Not needed" without specific reason | Reject. Replace with a one-line reason that names what about this task removes the trigger. |
 | Delivered inherited/static prototype with visible draft artifacts (`placeholder`, `TBC`, `Junior pass`, inline `style=` cruft) | Run the polish artifact scan, remove public-facing internals, replace placeholders with intentional treatments or real assets, then rerender screenshots. |
 | Screenshot/vision review finds mobile clipping, awkward CTA wrapping, or diagram edge cropping | Fix the concrete CSS/layout issue, regenerate the affected screenshot, and rerun the targeted visual review before delivery. |
