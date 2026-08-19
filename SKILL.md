@@ -50,7 +50,7 @@ This skill orchestrates the following. Every row is a hard dependency, installed
 | `shadcn/ui` registry | Any UI component before hand-rolling | CLI, no skill install. See `references/component-sources.md` |
 | `21st.dev` registry | UI component not covered by shadcn | CLI, no skill install |
 | `ElevenLabs UI` registry | Voice/agent state-machine components | CLI, no skill install |
-| `spline-3d-integration` | Hero section, product showcase, or any 3D scene | `npx skills add sickn33/agentic-awesome-skills -g -y -s spline-3d-integration` |
+| `spline-3d-integration` | A pre-authored Spline scene URL exists to embed. See Step 4: it does not cover generating a scene from scratch | `npx skills add sickn33/agentic-awesome-skills -g -y -s spline-3d-integration` |
 | `svg-animations` | Any animated SVG (path, stroke, morph) | `npx skills add supermemoryai/skills -g -y -s svg-animations` |
 | `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion or sequenced animation | `npx skills add greensock/gsap-skills -g -y -s gsap-core -s gsap-timeline -s gsap-plugins -s gsap-react` |
 | `frontend-design` | Aesthetic direction within token constraints | `npx skills add anthropics/skills -g -y -s frontend-design` |
@@ -354,18 +354,25 @@ Never hand-roll a component before checking registries. Check in this order:
 1. **shadcn/ui** (`https://ui.shadcn.com/docs/components`): composable base components, CSS var native
 2. **21st.dev** (`https://21st.dev/home`): AI/agent-focused React + shadcn components
 3. **ElevenLabs UI** (`https://ui.elevenlabs.io/docs`): voice/agent state-machine components
-4. **Spline** (`https://spline.design`): interactive 3D scenes for hero sections and product showcases. Use the `spline-3d-integration` skill for embedding. Do not hand-roll WebGL or Three.js when a Spline scene covers the need.
+4. **Spline** (`https://spline.design`): interactive 3D scenes for hero sections and product showcases, embedded via the `spline-3d-integration` skill.
 
 Rule: if a registry component covers ≥80% of the need, use and customize. Hand-roll only below 80% coverage.
 
-A live Codex run given a task naming an interactive 3D model proposed "a lightweight
-interactive 3D coffee bean built with Three.js" as its plan, without mentioning Spline or
-`spline-3d-integration` at all, logged at
-`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-51-48-01a0196f-2160-7552-b436-e13c640c085e.jsonl`.
-The row above already banned this outcome in plain language before that run happened. If a
-task names a 3D scene, rotatable model, or product showcase, name `spline-3d-integration`
-in your response before proposing any specific library. Naming Three.js, react-three-fiber,
-or raw WebGL first is the failure this row exists to prevent.
+**Spline is embed-only, this changes the rule for row 4.** `spline-3d-integration`'s own
+text assumes a scene URL already exists, authored in Spline's visual editor: "Once you
+have the stack and the scene URL, read the appropriate guide." It has no path for
+generating a scene from a text description. A task naming a 3D model with no existing
+`.splinecode` URL and no Spline account in play is not the 80%-coverage case rows 1-3
+describe. Ask, don't ban: when a task wants a 3D scene, ask in the Confidence Check
+whether a Spline scene already exists to embed. If yes, use `spline-3d-integration`. If
+no, and authoring one is out of scope for this task, say so explicitly and get the user's
+sign-off before hand-rolling with Three.js or another library. A live Codex run given a task
+naming an interactive 3D model presented exactly this choice unprompted once it knew
+Spline needs a pre-authored scene, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-56-11-01a01973-25da-7b42-ab9a-b08a4b4c1b61.jsonl`.
+That is correct behavior. The failure is a silent Three.js default with the Spline/no-scene
+tradeoff never surfaced at all, not a Three.js pick that follows an explicit "no scene
+exists" answer.
 
 Full registry details in `references/component-sources.md`.
 
@@ -673,8 +680,8 @@ dependency required to make the skill itself work correctly without one.
 | Built single-file HTML without DESIGN.md or token discipline | Failure. Use the static/single-file demo branch. Tokens in `:root`/`.dark`, native `@layer`, no raw hex. |
 | Skipped registry discovery, hand-rolled all components | Stop. Run shadcn/21st.dev/ElevenLabs check. Replace hand-rolled with registry components above 80% coverage. |
 | Skipped `frontend-design` invocation for aesthetic work | Stop. Invoke `frontend-design`. Apply direction within token constraints. |
-| Skipped `spline-3d-integration` when hero needs depth/3D | Stop. Invoke `spline-3d-integration`. Embed scene. Do not hand-roll WebGL. |
-| Proposed Three.js, react-three-fiber, or raw WebGL for a 3D model/scene before naming `spline-3d-integration` | Reject. Discard the proposal. Name and check `spline-3d-integration` first, per Step 4's discovery order. |
+| A Spline scene already exists for this brand/project but the build hand-rolled WebGL or Three.js instead | Stop. Invoke `spline-3d-integration`. Embed the existing scene. |
+| Defaulted to Three.js/react-three-fiber for a 3D model without ever asking whether a Spline scene exists | Reject. Ask in the Confidence Check first. A Three.js pick that follows an explicit "no scene, out of scope to author one" answer is fine. A silent default is not. |
 | Animated SVG built without `svg-animations` + `gsap-*` | Stop. Restructure paths via `svg-animations`. Add motion via correct `gsap-*` skill. |
 | Wrote UI code without producing Pre-Build Manifest first | Failed task. Discard the code. Restart from Step 1 of the Execution Contract. The manifest is non-negotiable. |
 | User said "skip the manifest" or "just build it" | Refuse politely. The manifest is the user's review surface, not yours to bypass on their behalf. Produce the manifest. |
