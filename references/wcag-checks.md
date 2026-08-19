@@ -54,10 +54,10 @@ function contrastRatio(l1, l2) {
 
 ## design.md CLI (unverified, optional)
 
-No install source is known for this tool. `npm view design.md` returned 404 on
-2026-08-19, so treat the commands below as unverified. The contrast formula above
-covers the same check with no dependency. Use that instead unless you already have
-this CLI on your machine.
+No install source is known for this tool. `npm view design.md` returns 404, so treat
+the commands below as unverified. The contrast formula above covers the same check
+with no dependency. Use that instead unless you already have this CLI on your
+machine.
 
 If `design.md` is installed:
 

@@ -13,11 +13,10 @@ a machine-level enforcement layer on top (see "Optional: machine-level
 enforcement" near the end), but nothing here depends on one existing.
 
 Read this file on its own, not batched into one call with other skills' SKILL.md
-files. A live Codex run on 2026-08-19 read this file together with two others in a
-single truncated exec call. The output cut off partway through this file's own
-Method section, and the run proceeded on the frontmatter and table alone, skipping
-the tooling gate, the Confidence Check, and the scope spec without anyone deciding
-to skip them. Read each skill's file with its own dedicated call.
+files. A batched multi-file read can truncate partway through this file's own
+Method section, leaving only the frontmatter and table visible. That silently
+drops the tooling gate, the Confidence Check, and the scope spec. Read each
+skill's file with its own dedicated call.
 
 The scope-spec gate below is adapted from [mattpocock/skills](https://github.com/mattpocock/skills)'
 `skills/productivity/grilling/SKILL.md` and `skills/productivity/grill-me/SKILL.md`,
@@ -39,7 +38,7 @@ Do not skip to implementation. This skill runs first, every time.
 
 This skill orchestrates the following. Every row is a hard dependency, installed by Method Step -1 before any other step runs. Invoke each one when its trigger fires. Skipping a sub-skill without an explicit recorded N/A reason in the Pre-Build Manifest is a failure mode. "Not needed" alone is rejected. State the specific reason this task does not trigger that skill.
 
-"Not installed" is never a valid N/A reason. Step -1 installs whatever is missing, which makes that reason impossible by construction. Every command in the Install column was verified working on 2026-08-19.
+"Not installed" is never a valid N/A reason. Step -1 installs whatever is missing, which makes that reason impossible by construction. Every command in the Install column works as written.
 
 | Sub-skill | Trigger condition | Install |
 |-----------|-------------------|---------|
@@ -132,10 +131,9 @@ find yourself wanting to write one, Step -1 did not complete. Go back and finish
 
 Use `BLOCKED` only when an install genuinely failed after a real attempt. Record the
 command you ran and the error it returned, then stop and report to the user. Never
-downgrade a failed install to `N/A` and continue building. This rule closes an observed
-hole: a live Codex run of this skill on 2026-08-19 wrote `frontend-design | NOT FOUND`
-into its own scope spec and kept building. See the source doc at
-https://github.com/Synx-x/web-design-skill for the current gate text.
+downgrade a failed install to `N/A` and continue building. Writing `frontend-design |
+NOT FOUND` into a scope spec and continuing to build is exactly the failure this rule
+closes.
 
 **Refusal contract:** If asked to write UI code without these outputs in sequence, refuse. Explain that the skill is active and the gates have not cleared. Restart from Step 1.
 
@@ -181,7 +179,7 @@ Install every name the loop printed as MISSING, using that row's command from th
 
 **No skip path, either class.** "Not installed" is not a valid Pre-Build Manifest reason for anything in either class. This step exists precisely to make that reason impossible. A `MISSING` line that survives into the manifest is a hard stop, not a recorded N/A. Full command reference in `references/design-quality-tools.md`.
 
-One caveat on agent linkage. The `npx skills add` output can name an agent directory it did not actually write. Trust the filesystem loop above over the installer's own summary. Verified against Codex on 2026-08-19: the installer printed "copy → Codex" while `~/.codex/skills/` stayed empty. A manual symlink from `~/.agents/skills/<name>` fixed it.
+One caveat on agent linkage. The `npx skills add` output can name an agent directory it did not actually write, printing "copy → Codex" while `~/.codex/skills/` stays empty. Trust the filesystem loop above over the installer's own summary. A manual symlink from `~/.agents/skills/<name>` to the missing target fixes it.
 
 
 ### -0.5. Confidence Check (mandatory, see Execution Contract item 3)
@@ -198,12 +196,9 @@ to in sequence.
 **Named anti-pattern, banned outright.** Inventing a full direction yourself, then asking
 one closing question like "Does this direction look right?" or "Approve this direction and
 I'll build it" is not the Confidence Check. It looks similar, reads as thorough, and is not
-this gate. Two live Codex runs against this exact skill text produced this substitute
-instead of the real batch, on a vague single-sentence request that should have triggered
-every axis — logged at `/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T10-55-02-01a0193b-275f-7720-b491-d839a64edac6.jsonl`
-and `rollout-2026-08-19T11-02-07-01a01941-a296-7602-8714-4cb890015312.jsonl`. The Confidence
-Check has a fixed shape: several named axes, each with 2-4 concrete options, asked
-together, before you have picked a direction. A single invented direction plus one yes/no
+this gate, even on a vague single-sentence request that should trigger every axis. The
+Confidence Check has a fixed shape: several named axes, each with 2-4 concrete options,
+asked together, before you have picked a direction. A single invented direction plus one yes/no
 question is always wrong here, regardless of how detailed that direction reads.
 
 ### -0.25. Write the scope spec (mandatory, every task, see Execution Contract item 4)
@@ -366,13 +361,9 @@ generating a scene from a text description. A task naming a 3D model with no exi
 describe. Ask, don't ban: when a task wants a 3D scene, ask in the Confidence Check
 whether a Spline scene already exists to embed. If yes, use `spline-3d-integration`. If
 no, and authoring one is out of scope for this task, say so explicitly and get the user's
-sign-off before hand-rolling with Three.js or another library. A live Codex run given a task
-naming an interactive 3D model presented exactly this choice unprompted once it knew
-Spline needs a pre-authored scene, logged at
-`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-56-11-01a01973-25da-7b42-ab9a-b08a4b4c1b61.jsonl`.
-That is correct behavior. The failure is a silent Three.js default with the Spline/no-scene
-tradeoff never surfaced at all, not a Three.js pick that follows an explicit "no scene
-exists" answer.
+sign-off before hand-rolling with Three.js or another library. A Three.js pick that
+follows an explicit "no scene exists" answer is correct. The failure is a silent Three.js
+default with the Spline/no-scene tradeoff never surfaced at all.
 
 Full registry details in `references/component-sources.md`.
 
@@ -382,9 +373,8 @@ Before writing any UI code, output the following manifest. Each row is INVOKED w
 
 A prose paragraph summarizing your decisions does not satisfy this gate, no matter how
 complete it reads. Every line below must appear verbatim, with its id and a verdict. A
-live Codex run of this skill on 2026-08-19 printed a casual bullet summary instead of
-this template, and skipped two rows in the process without anyone noticing until the
-transcript was read back. See https://github.com/Synx-x/web-design-skill for the run.
+casual bullet summary in place of this template is easy to write and easy to miss a row
+in, since nothing forces every id onto the page.
 
 Two rows below only cover work this skill can do before the build exists. Hero image and
 Tweaks Bar happen after Step 6, so they cannot get a truthful verdict here. Step 8 covers
@@ -422,13 +412,10 @@ Anti-slop check: PASSED (no purple gradient, emoji icons, left-border cards, SVG
 **Hard stop.** Output the manifest to chat. Do not write UI code. Do not generate filenames. Do not draft markup. Wait for explicit user sign-off (e.g. "go", "approved", "proceed"). Silence is not approval. A vague "sounds good" is not approval. Reject N/A rows that lack a specific reason and require the user to elaborate before continuing.
 
 **Named anti-pattern, banned outright.** Picking a letter from a Step 0/3 variant set ("A",
-"B", "the second one") answers which direction to build, not whether to build. A live
-Codex run against this skill treated the user's variant pick as manifest sign-off and
-wrote "Direction A is approved. I'm moving into the build pass now" without ever printing
-the manifest template above — logged at
-`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-12-53-01a0194b-7ed2-7533-b1df-0285e0429074.jsonl`,
-line 113. A direction pick and a manifest sign-off are two different user answers to two
-different questions asked at two different times. Print the manifest and get its own
+"B", "the second one") answers which direction to build, not whether to build. Treating
+that pick as manifest sign-off, and moving straight into the build pass, skips printing
+the manifest template above entirely. A direction pick and a manifest sign-off are two
+different user answers to two different questions asked at two different times. Print the manifest and get its own
 explicit approval even when the direction was already chosen.
 
 If you find yourself writing UI code and have not produced this manifest, stop immediately. Discard the in-progress code. Restart from Step 1.
@@ -550,13 +537,10 @@ omitted Tweaks Bar becomes visible instead of quietly passing as done.
 
 **Named anti-pattern, banned outright.** "N/A, this is a static/single-file/simple page
 with no separate tuning surface" is not a valid reason, no matter how reasonable it reads.
-Naming the pattern in prose has not been enough. Two separate live Codex runs wrote this
-exact excuse in different words, both for static single-file pages that had a real
-interactive feature: one a subscription-plan selector, the other a draggable coffee bean
-with a hover/active state. Each is a token/state combination this gate exists to expose,
-logged at
-`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-12-53-01a0194b-7ed2-7533-b1df-0285e0429074.jsonl`
-and `/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T12-01-08-01a01977-ae29-7502-ac01-7a89869ff130.jsonl`.
+A static single-file page can still have a real interactive feature: a subscription-plan
+selector, a draggable element with a hover/active state. Each is a token/state combination
+this gate exists to expose, and naming the excuse in prose alone is not enough to stop it,
+which is why the check below is mechanical rather than a plain instruction.
 
 **Mechanical check, not just a prose rule.** Before writing this row's verdict, open the
 DESIGN.md this build produced and count its token declarations. `N/A` is only reachable if
@@ -615,14 +599,12 @@ first. An omitted Tweaks Bar row is not a smaller failure than an omitted depend
 Both are the same failure: a mandatory step that ran silently, or did not run at all, and
 nothing forced it into view.
 
-**Writing this block into the ledger file is not the same as satisfying this gate.** A
-live Codex run appended the correct four-line structure to `docs/design/design-ledger.md`
-through a file edit, then closed with an unrelated prose summary in chat and never printed
-the block itself, logged at
-`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-27-11-01a01958-974d-7b11-b00d-2c3d7b9c6e04.jsonl`.
-The user reading chat saw none of it. Both copies are required: the persistent one in the
-ledger file, and this exact block as its own chat message, before the closing summary,
-not folded into or replaced by one.
+**Writing this block into the ledger file is not the same as satisfying this gate.**
+Appending the correct four-line structure to `docs/design/design-ledger.md` through a
+file edit, then closing with an unrelated prose summary in chat, leaves the user reading
+chat with none of it. Both copies are required: the persistent one in the ledger file, and
+this exact block as its own chat message, before the closing summary, not folded into or
+replaced by one.
 
 
 ## Optional: machine-level enforcement
