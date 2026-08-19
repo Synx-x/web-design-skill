@@ -730,6 +730,16 @@ words), hedge words (`perhaps`, `to be clear`), hollow intensifiers (`genuine`, 
 bullet lists used where prose reads better, and jargon introduced without a
 plain-language gloss on first use. Full checklist in the skill's own SKILL.md.
 
+**"INVOKED" needs a number attached, not a claim.** A ledger row reading `avoid-ai-writing:
+INVOKED, scope/design prose was checked` is not evidence anything happened. A live Codex
+run wrote exactly that line for a scope spec that had 10 em dashes in 927 words, roughly
+one per 93, ten times over the skill's own stated hard cap of one per 1,000, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T19-18-55-01a01b08-7a0c-7642-a99b-bc4dc938367c.jsonl`.
+Count the em dashes yourself before writing the verdict: `grep -c "—"` on the file in
+question. `INVOKED` requires that count to already be at or under the cap. If it's over,
+fix the text first, recount, and only write `INVOKED` once the number actually clears the
+bar.
+
 
 ### 8. Post-Build Confirmation (mandatory gate, before declaring the task done)
 
@@ -790,6 +800,7 @@ dependency required to make the skill itself work correctly without one.
 | Impeccable invoked by calling a script path (e.g. `impeccable/scripts/detect.mjs`) instead of `npx impeccable <command>` | Reject. The script path skips dependency resolution, runs degraded, and returns an empty finding list. Use the CLI. |
 | A manual chunked read of this file (`sed -n '1,220p'`, then `'221,520p'`) stopped short of the end, and every gate past that point ran unseen instead of skipped | Stop. Check `wc -l` first. Read to the closing `## Failure Modes` heading, not to a round chunk size. |
 | Free-text output shown to the user without running Step 7.5's Writing Quality Check first | Reject. Run `avoid-ai-writing` detect-only, fix what it flags, then deliver. |
+| Ledger recorded `avoid-ai-writing: INVOKED` with no em dash count or other concrete metric attached | Reject. `INVOKED` without a number is the same failure as `impeccable detect` returning an empty list from the wrong invocation path: a claim standing in for evidence. Count and attach the number. |
 | A subagent or sub-skill's prose (huashu-design narration, `redesign-existing-projects` diagnosis text) shipped as-is, on the reasoning that Step 7.5 only applies to text this skill wrote directly | Reject. Nesting depth does not exempt a paragraph. Apply the same check to delegated output before forwarding it. |
 | Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
 | `redesign-existing-projects` ran its Fix step on its own after Diagnose, with no separate approval | Reject. This skill overrides that default. Diagnose, then stop, unless the user asked for fixes. |
