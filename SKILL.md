@@ -684,6 +684,20 @@ rewording of the same excuse all fail the same check: they name zero controls. I
 verdict names zero controls, it is wrong, regardless of how the sentence around the zero
 is phrased.
 
+**A real number is not a real panel. Both are required, separately.** A live Codex run
+wrote `Tweaks Bar: INVOKED (12 controls: --paper, --paper-deep, ...)` with a count that
+checked out exactly against `styles.css`'s real token declarations, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T20-00-56-01a01b2e-f36b-7512-a9c2-dd5605210f58.jsonl`.
+The shipped page had no tweaks panel anywhere: no toggle, no control element, nothing a
+user could open and drag. The count was real. The panel it was supposed to describe did
+not exist. Counting
+DESIGN.md's tokens satisfies the number half of this check. It says nothing about whether
+a panel got built. Before writing `INVOKED`, grep the actual shipped HTML/JS for the
+panel's own markup, a toggle control, an input bound to each listed token, and name that
+selector or element id in the verdict: `Tweaks Bar: INVOKED (12 controls, panel at
+#tweaks-panel toggled by #tweaks-toggle)`. A verdict with a token count but no panel
+location named is the same failure this whole gate exists to close, one step later.
+
 
 ### 7. Validate
 
@@ -758,7 +772,7 @@ template, printed in chat, before any "done", "built", or "here's your page" mes
 POST-BUILD CONFIRMATION for: <task description>
 
 - Hero image (Step 6b): INVOKED <variants generated, final pick> | N/A <reason, e.g. single component, no hero section>
-- Tweaks Bar (Step 6c, mandatory every build): INVOKED (N controls: <name each token/motion/state>), no N/A path, always name N
+- Tweaks Bar (Step 6c, mandatory every build): INVOKED (N controls: <name each token/motion/state>, panel at <selector/id>, toggle at <selector/id>), no N/A path
 - Validate (Step 7): PASSED <impeccable detect result, contrast/responsive/state checks> | FAILED <finding, fix applied>
 - Design ledger file: WRITTEN <path> | UPDATED <path>
 ```
@@ -831,6 +845,7 @@ dependency required to make the skill itself work correctly without one.
 | Wrote the Post-Build Confirmation into the ledger file but never printed it in chat | Failure. Both copies are required. Print the exact block in chat before the closing summary, in addition to the file write. |
 | Tweaks Bar (Step 6c) skipped, marked N/A, or treated as a fallback for when `impeccable live` "isn't enough" | Reject. Mandatory for every build, no N/A path, not a fallback. Build it, then report it on Step 8. |
 | Tweaks Bar verdict named zero controls, in any wording ("no external tweak tool," "no live tuning surface," or a genuinely new excuse not listed here) | Reject. Zero controls named is the same failure regardless of phrasing. Count DESIGN.md's tokens, name that many. |
+| Tweaks Bar verdict named a real, correct token count with no panel element ever built | Reject. A verified number is not a verified panel. Grep the shipped HTML/JS for the panel's own markup before writing `INVOKED`, and name its selector or id in the verdict. |
 | Manifest or Post-Build Confirmation given as a prose paragraph instead of the literal template | Reject. Neither gate is satisfied by a summary that reads as complete. Every listed line needs its own id and verdict. |
 | Tweaks Bar built but missing a control for a DESIGN.md token the build uses, a motion parameter, or a component state | Reject. Coverage means every one the build actually has, a partial panel is a failed one. |
 | Iterating by repeated vague re-prompts ("make it more premium") | Stop. Use the build's own Tweaks Bar (mandatory, Step 6c) or `impeccable live` for direct visual iteration instead of guessing through the terminal. |
