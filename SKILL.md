@@ -79,6 +79,15 @@ instead. Full command reference: `references/design-quality-tools.md`.
 
 Not mutually exclusive with each other or with the manual anti-slop check in Step 2.
 
+**Always invoke Impeccable through `npx impeccable <command>`, never its internal script
+files directly.** Calling a path like `impeccable/scripts/detect.mjs` skips the npx
+package resolution that bundles Impeccable's HTML parser dependencies. That path runs in
+a silently degraded mode, falls back to regex matching, and returns an empty finding list
+that reads exactly like a clean pass, not like a broken tool. The same file, run through
+`npx impeccable detect`, returns real findings: exact contrast ratios, specific padding
+violations, named elements. The command is the interface. A script path found by
+searching the filesystem is not a shortcut, it is a different and worse tool.
+
 ## Execution Contract
 
 This skill produces UI code only after every gate below clears. Skipping any gate fails the task.
@@ -245,6 +254,19 @@ REVIEW MANIFEST for: <task description>
 - Outcome requested: <diagnosis only | diagnosis + punch list | diagnosis + fixes>
 - Tools invoked: <rubric | impeccable detect | redesign-existing-projects, or a combination>
 ```
+
+**This applies to every access type, not only screenshots.** A live-URL review that opens
+the page with a general-purpose web-fetch tool, greps the HTML for `aria-label` and
+`prefers-reduced-motion` by hand, and never prints this manifest has skipped the gate
+entirely, even though the resulting critique reads as thorough. Detail in the prose is not
+a substitute for the template, on a URL any more than on a screenshot.
+
+**Named anti-pattern for the Live URL row.** `impeccable detect <url>` takes a URL
+argument directly and returns real findings against the live page: exact contrast ratios,
+named elements with specific violations. Reaching for a general web-fetch tool and manual
+pattern-matching instead, when the named tool covers exactly this case, is the same
+failure as proposing Three.js before checking whether a Spline scene exists. The tool
+named in the routing table gets tried first.
 
 **Diagnosis-only is a hard stop on code.** If the outcome requested is "diagnosis only" or
 "diagnosis + punch list," do not edit, generate, or scaffold anything. The deliverable is
@@ -710,6 +732,9 @@ dependency required to make the skill itself work correctly without one.
 | A review/critique task ran through the build Confidence Check (asked about brand identity, tech stack) instead of the Review Confidence Check | Stop. Step -0.75 classifies the task before either Confidence Check runs. Restart classification. |
 | Review Confidence Check's three axes inferred from context instead of asked and answered | Reject. Access can be inferred from what was attached. Read type and outcome cannot. Ask, batched, and wait. |
 | Rubric's Philosophy Alignment dimension silently swapped for an unlisted one (e.g. "Brand consistency") when no design philosophy was named | Reject. Mark that dimension N/A with the reason instead. |
+| A live-URL review opened the page with a general web-fetch tool and skipped `impeccable detect <url>` | Reject. The named tool covers exactly this case. Run it before substituting a manual read. |
+| Review Manifest never printed for a URL or codebase review, even though the resulting critique was thorough | Reject. Thorough prose does not satisfy this gate on any access type. Print the template. |
+| Impeccable invoked by calling a script path (e.g. `impeccable/scripts/detect.mjs`) instead of `npx impeccable <command>` | Reject. The script path skips dependency resolution, runs degraded, and returns an empty finding list. Use the CLI. |
 | Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
 | `redesign-existing-projects` ran its Fix step on its own after Diagnose, with no separate approval | Reject. This skill overrides that default. Diagnose, then stop, unless the user asked for fixes. |
 | Review findings given as a prose paragraph instead of the Review Manifest template | Reject. Same discipline as the Pre-Build Manifest: print the fixed template. |
