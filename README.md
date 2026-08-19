@@ -1,26 +1,19 @@
 # web-design
 
-Design method for AI coding agents. 1 skill, 11 required sub-skills, a
-mandatory pre-build manifest, and a post-build confirmation gate, for
-AI-generated frontend design that doesn't skip its own steps silently.
+Design method for AI coding agents. One skill, eleven required sub-skills,
+a mandatory pre-build manifest, and a post-build confirmation gate.
 
 > Quick start: `npx skills add https://github.com/Synx-x/web-design-skill -g -y`,
-> then ask your agent to build a page or component. The skill self-triggers
-> from its own description, no explicit invocation needed.
+> then ask your agent to build a page or component. The skill triggers on
+> its own description, no explicit invocation needed.
 
-## Why this skill?
+## Why this skill
 
-Anthropic's `frontend-design` skill is one input into taste and direction.
-This skill is the method around it: the gate that runs before any UI code,
-not a style guide on its own. It grew out of `scope-grill`'s written-spec
-discipline and huashu-design's Advisor Mode, then hardened against failure
-modes found by running it live against Codex, not by guessing at them.
-
-web-design closes three separate silent-skip risks:
-- A tooling or sub-skill dependency that's absent gets installed, not N/A'd
-- A design direction invented by the agent doesn't stand in for the
-  batched question set the user was supposed to answer
-- A build step that ran (or didn't) gets a printed verdict, not silence
+Anthropic's `frontend-design` skill covers taste and direction. This skill
+is the method around it: the gate that runs before any UI code, not a
+style guide on its own. It enforces a written scope spec, a batched
+question set instead of guessed defaults, a signed-off pre-build manifest,
+and a post-build confirmation naming every dependency's outcome.
 
 ## What's included
 
@@ -30,38 +23,35 @@ tooling check, confidence check, scope spec, taste/Advisor Mode direction,
 wireframe or variant sequence, component discovery, pre-build manifest,
 build, and a post-build confirmation.
 
-### 11 Required Sub-Skills
+### Required sub-skills
 
 | Sub-skill | Purpose |
 |-----------|---------|
 | `huashu-design` | Advisor Mode, Brand Asset Protocol, variant comparisons, deck/motion output |
 | `frontend-design` | Aesthetic direction within token constraints |
-| `spline-3d-integration` | Embeds a pre-authored Spline scene, does not generate one |
+| `spline-3d-integration` | Embeds a pre-authored Spline scene |
 | `svg-animations` | Animated SVG: path, stroke, morph |
 | `gsap-core` / `gsap-timeline` / `gsap-plugins` / `gsap-react` | Motion and sequenced animation |
 | `excalidraw-diagram` | Visual wireframes |
 | `brainstorming` | Layout exploration, design tradeoffs |
-| `higgsfield-generate` | Hero image on a full-aesthetic build, needs its own credentials |
+| `higgsfield-generate` | Hero image on a full-aesthetic build |
 
-Full trigger conditions and verified install commands are in `SKILL.md`'s
-Required Sub-Skills table.
+Full trigger conditions and install commands are in `SKILL.md`'s Required
+Sub-Skills table.
 
-### Named anti-patterns
+### Rules the skill enforces
 
-Each one below was observed in a live Codex run against this skill, not
-imagined in advance:
-- Inventing a design direction, then asking one closing yes/no question
-  instead of the real batched multi-axis Confidence Check
-- Treating a variant pick ("A", "the second one") as Pre-Build Manifest
-  sign-off
-- `N/A` for the Tweaks Bar on a "static" page that has a real interactive
-  feature
-- Writing the Post-Build Confirmation into the ledger file but never into
-  chat
-- Defaulting to Three.js for a 3D model without asking whether a Spline
-  scene already exists to embed
-
-Each is named and banned in `SKILL.md` with the run that produced it.
+- No dependency gets an N/A verdict for being absent. Install it instead.
+- A design direction never stands in for the batched question set the
+  user is meant to answer.
+- Picking a variant is not the same as signing off on the pre-build
+  manifest. Both need their own explicit approval.
+- The Tweaks Bar is mandatory on every build, static or single-file
+  included, and gets a named list of the controls it exposes, not `N/A`.
+- Every build ends with a printed confirmation naming the outcome of the
+  hero image, the Tweaks Bar, validation, and the design ledger.
+- A 3D task asks whether a Spline scene already exists to embed before
+  defaulting to a hand-rolled library.
 
 ## Installation
 
@@ -98,36 +88,24 @@ batched question set before doing anything else.
 
 - [Impeccable](https://github.com/pbakaus/impeccable) and the
   [Taste Skill](https://github.com/Leonxlnx/taste-skill), both npx-installed.
-  The skill's own Step -1 installs whichever is missing the first time it
-  runs. Neither has a valid N/A path.
+  The skill's own Step -1 installs whichever is missing. Neither has a
+  valid N/A path.
 - An agent/harness that supports the [skills CLI](https://skills.sh/)
-  convention. Verified against Codex CLI, should work anywhere the `skills`
-  CLI installs to.
-
-## Keeping test/build output out of git
-
-This repo's own `.gitignore` excludes `.codex/`, `.grok/`, and any
-`codex-test-run*` directory left behind by live testing. Apply the same
-pattern in a project that adopts this skill, so a design tool's working
-files never land in your commits.
+  convention.
 
 ## Supported tools
 
 Anything the [skills CLI](https://skills.sh/) targets: Claude Code, Codex
 CLI, Cursor, and the other agents it lists with `npx skills add -a '*'`.
-Only Codex CLI has been exercised against a live run as of this writing.
 
 ## Contributing
 
 Open an issue or PR at
 [github.com/Synx-x/web-design-skill](https://github.com/Synx-x/web-design-skill).
-Every fix in `SKILL.md` cites the session log that produced it. A PR that
-adds a new anti-pattern should do the same.
 
-## What's in the repo
+## Repository layout
 
 - `SKILL.md`: the full method
 - `references/`: taste-library and Wide-Net Variant Sequence detail, the
   DESIGN.md schema, WCAG contrast checks, component-source registries, the
   design-quality tooling command reference, and a micro-details checklist
-- `TEST-PLAN.md`: the manual test matrix this skill was verified against
