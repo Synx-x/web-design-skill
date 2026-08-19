@@ -211,16 +211,28 @@ wait for the answer.
    Diagnosis plus a prioritized punch list for the user to act on later. Diagnosis, then
    apply the agreed fixes now.
 
+**Named anti-pattern, banned outright.** Skipping this batch and inferring the three
+answers from context, then running straight into the critique, is the same failure as the
+build Confidence Check's invent-and-approve substitute. A single attached screenshot does
+answer axis 1 on its own, that inference is safe. Axis 3 is not inferable: "diagnosis only"
+and "diagnosis + punch list" carry different weight, and guessing between them is a
+judgment call that belongs to the user, not the model. Ask, batched, and wait.
+
 **Routing, by what's accessible:**
 
 | Access | Tool |
 |--------|------|
-| Screenshot/description only | `huashu-design`'s expert-review checkpoint (`references/critique-guide.md`'s rubric: Concept, Philosophy Alignment, Visual Hierarchy, Craft, Functionality, Innovation, each 0-10) |
+| Screenshot/description only | `huashu-design`'s expert-review checkpoint (`references/critique-guide.md`'s rubric: Concept, Philosophy Alignment, Visual Hierarchy, Craft Quality, Functionality, Originality, each 0-10) |
 | Live URL | `impeccable detect <url>`, plus the same rubric against a render of the page |
 | Local codebase | `redesign-existing-projects`'s Scan and Diagnose steps, plus `impeccable detect .` |
 
 A UX/design read routes to the rubric. A technical audit routes to `impeccable detect`
 and `redesign-existing-projects`'s pattern checklist. "Both" runs all applicable rows.
+
+Philosophy Alignment scores against a stated design philosophy. A screenshot with no
+named philosophy has nothing to score against. Mark that one dimension N/A with the
+reason, in the scores themselves, rather than silently swapping in an unlisted dimension
+in its place.
 
 **Review Manifest (mandatory, printed before any findings).** Same discipline as the
 Pre-Build Manifest: a fixed template, not a prose summary.
@@ -696,6 +708,8 @@ dependency required to make the skill itself work correctly without one.
 | Symptom | Fix |
 |---------|-----|
 | A review/critique task ran through the build Confidence Check (asked about brand identity, tech stack) instead of the Review Confidence Check | Stop. Step -0.75 classifies the task before either Confidence Check runs. Restart classification. |
+| Review Confidence Check's three axes inferred from context instead of asked and answered | Reject. Access can be inferred from what was attached. Read type and outcome cannot. Ask, batched, and wait. |
+| Rubric's Philosophy Alignment dimension silently swapped for an unlisted one (e.g. "Brand consistency") when no design philosophy was named | Reject. Mark that dimension N/A with the reason instead. |
 | Applied fixes to a review task when the user only asked for diagnosis or a punch list | Reject. Diagnosis-only is a hard stop on code. Only "diagnosis + fixes" from the Review Confidence Check's third question authorizes an edit. |
 | `redesign-existing-projects` ran its Fix step on its own after Diagnose, with no separate approval | Reject. This skill overrides that default. Diagnose, then stop, unless the user asked for fixes. |
 | Review findings given as a prose paragraph instead of the Review Manifest template | Reject. Same discipline as the Pre-Build Manifest: print the fixed template. |
