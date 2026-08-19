@@ -358,6 +358,15 @@ Never hand-roll a component before checking registries. Check in this order:
 
 Rule: if a registry component covers ≥80% of the need, use and customize. Hand-roll only below 80% coverage.
 
+A live Codex run given a task naming an interactive 3D model proposed "a lightweight
+interactive 3D coffee bean built with Three.js" as its plan, without mentioning Spline or
+`spline-3d-integration` at all, logged at
+`/home/pc/.codex/sessions/2026/08/19/rollout-2026-08-19T11-51-48-01a0196f-2160-7552-b436-e13c640c085e.jsonl`.
+The row above already banned this outcome in plain language before that run happened. If a
+task names a 3D scene, rotatable model, or product showcase, name `spline-3d-integration`
+in your response before proposing any specific library. Naming Three.js, react-three-fiber,
+or raw WebGL first is the failure this row exists to prevent.
+
 Full registry details in `references/component-sources.md`.
 
 ### 5. Pre-Build Manifest (mandatory gate)
@@ -665,6 +674,7 @@ dependency required to make the skill itself work correctly without one.
 | Skipped registry discovery, hand-rolled all components | Stop. Run shadcn/21st.dev/ElevenLabs check. Replace hand-rolled with registry components above 80% coverage. |
 | Skipped `frontend-design` invocation for aesthetic work | Stop. Invoke `frontend-design`. Apply direction within token constraints. |
 | Skipped `spline-3d-integration` when hero needs depth/3D | Stop. Invoke `spline-3d-integration`. Embed scene. Do not hand-roll WebGL. |
+| Proposed Three.js, react-three-fiber, or raw WebGL for a 3D model/scene before naming `spline-3d-integration` | Reject. Discard the proposal. Name and check `spline-3d-integration` first, per Step 4's discovery order. |
 | Animated SVG built without `svg-animations` + `gsap-*` | Stop. Restructure paths via `svg-animations`. Add motion via correct `gsap-*` skill. |
 | Wrote UI code without producing Pre-Build Manifest first | Failed task. Discard the code. Restart from Step 1 of the Execution Contract. The manifest is non-negotiable. |
 | User said "skip the manifest" or "just build it" | Refuse politely. The manifest is the user's review surface, not yours to bypass on their behalf. Produce the manifest. |
