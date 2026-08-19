@@ -261,12 +261,22 @@ the page with a general-purpose web-fetch tool, greps the HTML for `aria-label` 
 entirely, even though the resulting critique reads as thorough. Detail in the prose is not
 a substitute for the template, on a URL any more than on a screenshot.
 
-**Named anti-pattern for the Live URL row.** `impeccable detect <url>` takes a URL
-argument directly and returns real findings against the live page: exact contrast ratios,
-named elements with specific violations. Reaching for a general web-fetch tool and manual
-pattern-matching instead, when the named tool covers exactly this case, is the same
-failure as proposing Three.js before checking whether a Spline scene exists. The tool
-named in the routing table gets tried first.
+**Named anti-pattern for the Live URL row.** Impeccable's own SKILL.md does not document
+that `detect` exists or takes a URL, so there is nowhere else to discover this. Run this
+command, exactly, before any general-purpose web-fetch tool or manual `curl`/grep read of
+the page:
+
+```bash
+npx impeccable detect <url>
+```
+
+It returns real findings against the live page: exact contrast ratios, named elements
+with specific violations. A run that instead opens the URL with a web-fetch tool, or
+proxies it through a reader service, and reads the raw HTML by hand has skipped this
+command entirely, even when its critique reads as thorough. Skipping the named command in
+favor of an improvised general one is the same failure as proposing Three.js before
+checking whether a Spline scene exists. Add `--viewport 390x844` for a mobile-width pass
+when the read includes responsive behavior.
 
 **Diagnosis-only is a hard stop on code.** If the outcome requested is "diagnosis only" or
 "diagnosis + punch list," do not edit, generate, or scaffold anything. The deliverable is
